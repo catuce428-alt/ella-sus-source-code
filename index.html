@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BiteDash | Fast & Fresh Food Delivery</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      color: #333;
+      padding-bottom: 60px;
+    }
+
+    header {
+      background-color: #ff4757;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+    }
+
+    .cart-badge {
+      background-color: #fff;
+      color: #ff4757;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Menu Section */
+    .menu-section h2 {
+      margin-bottom: 1rem;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-btn {
+      background-color: #e9ecef;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background-color: #ff4757;
+      color: #fff;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-body {
+      padding: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-price {
+      color: #2ed573;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .add-btn {
+      width: 100%;
+      background-color: #ff4757;
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .add-btn:hover {
+      background-color: #e03e4d;
+    }
+
+    /* Cart Sidebar */
+    .cart-section {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      height: fit-content;
+    }
+
+    .cart-section h2 {
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #f8f9fa;
+      padding-bottom: 0.5rem;
+    }
+
+    .cart-items {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .cart-item-title {
+      font-size: 0.95rem;
+    }
+
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .qty-btn {
+      background: #e9ecef;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .cart-total {
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      border-top: 2px solid #f8f9fa;
+      padding-top: 1rem;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      background-color: #2ed573;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+
+    .checkout-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🍔 BiteDash</h1>
+    <div class="cart-badge" id="cartBadge">Cart: 0</div>
+  </header>
+
+  <div class="container">
+    <!-- Menu Section -->
+    <section class="menu-section">
+      <h2>Explore Menu</h2>
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterMenu('all')">All</button>
+        <button class="filter-btn" onclick="filterMenu('burgers')">Burgers</button>
+        <button class="filter-btn" onclick="filterMenu('pizza')">Pizza</button>
+        <button class="filter-btn" onclick="filterMenu('drinks')">Drinks</button>
+      </div>
+
+      <div class="menu-grid" id="menuGrid">
+        <!-- Menu items dynamically inserted here -->
+      </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <section class="cart-section">
+      <h2>Your Order</h2>
+      <ul class="cart-items" id="cartItems">
+        <p style="color: #777;">Your cart is empty.</p>
+      </ul>
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cartTotal">$0.00</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn" disabled onclick="handleCheckout()">Checkout</button>
+    </section>
+  </div>
+
+  <script>
+    const menu = [
+      { id: 1, title: 'Classic Cheeseburger', category: 'burgers', price: 8.99 },
+      { id: 2, title: 'Double Bacon Burger', category: 'burgers', price: 11.49 },
+      { id: 3, title: 'Pepperoni Pizza', category: 'pizza', price: 14.99 },
+      { id: 4, title: 'Margherita Pizza', category: 'pizza', price: 12.99 },
+      { id: 5, title: 'Iced Lemon Tea', category: 'drinks', price: 3.49 },
+      { id: 6, title: 'Chocolate Milkshake', category: 'drinks', price: 4.99 }
+    ];
+
+    let cart = [];
+
+    function renderMenu(filter = 'all') {
+      const menuGrid = document.getElementById('menuGrid');
+      menuGrid.innerHTML = '';
+
+      const filtered = filter === 'all' ? menu : menu.filter(item => item.category === filter);
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-body">
+            <h3 class="card-title">${item.title}</h3>
+            <p class="card-price">$${item.price.toFixed(2)}</p>
+          </div>
+          <div style="padding: 0 1rem 1rem 1rem;">
+            <button class="add-btn" onclick="addToCart(${item.id})">Add to Cart</button>
+          </div>
+        `;
+        menuGrid.appendChild(card);
+      });
+    }
+
+    function filterMenu(category) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderMenu(category);
+    }
+
+    function addToCart(id) {
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        const menuItem = menu.find(item => item.id === id);
+        cart.push({ ...menuItem, qty: 1 });
+      }
+      updateCartUI();
+    }
+
+    function updateQty(id, change) {
+      const item = cart.find(i => i.id === id);
+      if (item) {
+        item.qty += change;
+        if (item.qty <= 0) {
+          cart = cart.filter(i => i.id !== id);
+        }
+      }
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const cartItems = document.getElementById('cartItems');
+      const cartTotal = document.getElementById('cartTotal');
+      const cartBadge = document.getElementById('cartBadge');
+      const checkoutBtn = document.getElementById('checkoutBtn');
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = '<p style="color: #777;">Your cart is empty.</p>';
+        cartTotal.textContent = '$0.00';
+        cartBadge.textContent = 'Cart: 0';
+        checkoutBtn.disabled = true;
+        return;
+      }
+
+      cartItems.innerHTML = '';
+      let total = 0;
+      let count = 0;
+
+      cart.forEach(item => {
+        total += item.price * item.qty;
+        count += item.qty;
+
+        const li = document.createElement('li');
+        li.className = 'cart-item';
+        li.innerHTML = `
+          <span class="cart-item-title">${item.title}</span>
+          <div class="cart-item-controls">
+            <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+            <span>${item.qty}</span>
+            <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+          </div>
+        `;
+        cartItems.appendChild(li);
+      });
+
+      cartTotal.textContent = `$${total.toFixed(2)}`;
+      cartBadge.textContent = `Cart: ${count}`;
+      checkoutBtn.disabled = false;
+    }
+
+    function handleCheckout() {
+      alert('Order placed successfully! Thank you for ordering with BiteDash.');
+      cart = [];
+      updateCartUI();
+    }
+
+    // Initial Render
+    renderMenu();
+  </script>
+
+</body>
+</html>
