@@ -1,360 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BiteDash | Fast & Fresh Food Delivery</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tales of the Medieval Realm</title>
+    <style>
+        body {
+            background-color: #1a1412;
+            color: #e0d5c1;
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
 
-    body {
-      background-color: #f8f9fa;
-      color: #333;
-      padding-bottom: 60px;
-    }
+        #game-container {
+            width: 600px;
+            background-color: #2b221e;
+            border: 4px solid #8b5a2b;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
 
-    header {
-      background-color: #ff4757;
-      color: #fff;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+        h1 {
+            text-align: center;
+            color: #dda10b;
+            border-bottom: 2px solid #8b5a2b;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
 
-    header h1 {
-      font-size: 1.5rem;
-    }
+        #stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background-color: #1a1412;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
 
-    .cart-badge {
-      background-color: #fff;
-      color: #ff4757;
-      padding: 0.4rem 0.8rem;
-      border-radius: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+        #log-box {
+            height: 180px;
+            background-color: #0f0c0a;
+            border: 1px solid #5c4033;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
 
-    .container {
-      max-width: 1100px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2rem;
-    }
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
 
-    @media (max-width: 768px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-    }
+        button, .btn-link {
+            background-color: #4a3525;
+            color: #f0e6d2;
+            border: 2px solid #8b5a2b;
+            padding: 12px;
+            font-family: 'Georgia', serif;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            box-sizing: border-box;
+        }
 
-    /* Menu Section */
-    .menu-section h2 {
-      margin-bottom: 1rem;
-    }
+        button:hover, .btn-link:hover {
+            background-color: #6e4e37;
+        }
 
-    .filter-buttons {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
+        button:disabled {
+            background-color: #221c18;
+            color: #665c54;
+            border-color: #443c34;
+            cursor: not-allowed;
+        }
 
-    .filter-btn {
-      background-color: #e9ecef;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.2s;
-    }
-
-    .filter-btn.active, .filter-btn:hover {
-      background-color: #ff4757;
-      color: #fff;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .card-body {
-      padding: 1rem;
-    }
-
-    .card-title {
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .card-price {
-      color: #2ed573;
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
-
-    .add-btn {
-      width: 100%;
-      background-color: #ff4757;
-      color: white;
-      border: none;
-      padding: 0.5rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .add-btn:hover {
-      background-color: #e03e4d;
-    }
-
-    /* Cart Sidebar */
-    .cart-section {
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      height: fit-content;
-    }
-
-    .cart-section h2 {
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #f8f9fa;
-      padding-bottom: 0.5rem;
-    }
-
-    .cart-items {
-      list-style: none;
-      margin-bottom: 1.5rem;
-    }
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.8rem;
-    }
-
-    .cart-item-title {
-      font-size: 0.95rem;
-    }
-
-    .cart-item-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .qty-btn {
-      background: #e9ecef;
-      border: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .cart-total {
-      font-size: 1.2rem;
-      font-weight: bold;
-      display: flex;
-      justify-content: space-between;
-      margin-top: 1rem;
-      border-top: 2px solid #f8f9fa;
-      padding-top: 1rem;
-    }
-
-    .checkout-btn {
-      width: 100%;
-      background-color: #2ed573;
-      color: white;
-      border: none;
-      padding: 0.75rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1rem;
-      margin-top: 1rem;
-    }
-
-    .checkout-btn:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-  </style>
+        .full-width-btn {
+            grid-column: span 2;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>🍔 BiteDash</h1>
-    <div class="cart-badge" id="cartBadge">Cart: 0</div>
-  </header>
+<div id="game-container">
+    <h1>Medieval Quest</h1>
+    
+    <div id="stats-bar">
+        <span>HP: <span id="hp">30</span>/30</span>
+        <span>Gold: <span id="gold">10</span></span>
+        <span>Potions: <span id="potions">1</span></span>
+        <span>Weapon: <span id="weapon">Iron Sword</span></span>
+    </div>
 
-  <div class="container">
-    <!-- Menu Section -->
-    <section class="menu-section">
-      <h2>Explore Menu</h2>
-      <div class="filter-buttons">
-        <button class="filter-btn active" onclick="filterMenu('all')">All</button>
-        <button class="filter-btn" onclick="filterMenu('burgers')">Burgers</button>
-        <button class="filter-btn" onclick="filterMenu('pizza')">Pizza</button>
-        <button class="filter-btn" onclick="filterMenu('drinks')">Drinks</button>
-      </div>
+    <div id="log-box">Welcome, brave knight. Choose your action below to begin your journey...</div>
 
-      <div class="menu-grid" id="menuGrid">
-        <!-- Menu items dynamically inserted here -->
-      </div>
-    </section>
+    <div class="actions" id="action-buttons">
+        <button onclick="explore()">Explore Dark Forest</button>
+        <button onclick="visitShop()">Visit Shop</button>
+        <button onclick="rest()">Rest at Inn (5 Gold)</button>
+        <button onclick="restartGame()">Restart</button>
+        <a href="medieval-run/index.html" class="btn-link full-width-btn">Play Medieval Run</a>
+    </div>
+</div>
 
-    <!-- Cart Sidebar -->
-    <section class="cart-section">
-      <h2>Your Order</h2>
-      <ul class="cart-items" id="cartItems">
-        <p style="color: #777;">Your cart is empty.</p>
-      </ul>
-      <div class="cart-total">
-        <span>Total:</span>
-        <span id="cartTotal">$0.00</span>
-      </div>
-      <button class="checkout-btn" id="checkoutBtn" disabled onclick="handleCheckout()">Checkout</button>
-    </section>
-  </div>
+<script>
+    let player = {
+        hp: 30,
+        maxHp: 30,
+        gold: 10,
+        potions: 1,
+        weapon: "Iron Sword",
+        attackPower: 6
+    };
 
-  <script>
-    const menu = [
-      { id: 1, title: 'Classic Cheeseburger', category: 'burgers', price: 8.99 },
-      { id: 2, title: 'Double Bacon Burger', category: 'burgers', price: 11.49 },
-      { id: 3, title: 'Pepperoni Pizza', category: 'pizza', price: 14.99 },
-      { id: 4, title: 'Margherita Pizza', category: 'pizza', price: 12.99 },
-      { id: 5, title: 'Iced Lemon Tea', category: 'drinks', price: 3.49 },
-      { id: 6, title: 'Chocolate Milkshake', category: 'drinks', price: 4.99 }
+    let currentMonster = null;
+
+    const monsters = [
+        { name: "Goblin Scout", hp: 12, attack: 4, reward: 8 },
+        { name: "Forest Bandit", hp: 18, attack: 5, reward: 12 },
+        { name: "Armored Orc", hp: 25, attack: 7, reward: 20 }
     ];
 
-    let cart = [];
+    function log(message) {
+        const logBox = document.getElementById("log-box");
+        logBox.innerHTML += `<p style="margin: 5px 0;">${message}</p>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
 
-    function renderMenu(filter = 'all') {
-      const menuGrid = document.getElementById('menuGrid');
-      menuGrid.innerHTML = '';
+    function updateStats() {
+        document.getElementById("hp").innerText = player.hp;
+        document.getElementById("gold").innerText = player.gold;
+        document.getElementById("potions").innerText = player.potions;
+        document.getElementById("weapon").innerText = player.weapon;
+    }
 
-      const filtered = filter === 'all' ? menu : menu.filter(item => item.category === filter);
-
-      filtered.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-body">
-            <h3 class="card-title">${item.title}</h3>
-            <p class="card-price">$${item.price.toFixed(2)}</p>
-          </div>
-          <div style="padding: 0 1rem 1rem 1rem;">
-            <button class="add-btn" onclick="addToCart(${item.id})">Add to Cart</button>
-          </div>
+    function renderTownButtons() {
+        const btnContainer = document.getElementById("action-buttons");
+        btnContainer.innerHTML = `
+            <button onclick="explore()">Explore Dark Forest</button>
+            <button onclick="visitShop()">Visit Shop</button>
+            <button onclick="rest()">Rest at Inn (5 Gold)</button>
+            <button onclick="restartGame()">Restart</button>
+            <a href="medieval-run/index.html" class="btn-link full-width-btn">Play Medieval Run</a>
         `;
-        menuGrid.appendChild(card);
-      });
     }
 
-    function filterMenu(category) {
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
-      renderMenu(category);
+    function explore() {
+        if (player.hp <= 0) return;
+        const template = monsters[Math.floor(Math.random() * monsters.length)];
+        currentMonster = { ...template };
+        
+        log(`<strong>A wild ${currentMonster.name} steps from the shadows!</strong>`);
+        renderCombatButtons();
     }
 
-    function addToCart(id) {
-      const existing = cart.find(item => item.id === id);
-      if (existing) {
-        existing.qty += 1;
-      } else {
-        const menuItem = menu.find(item => item.id === id);
-        cart.push({ ...menuItem, qty: 1 });
-      }
-      updateCartUI();
+    function renderCombatButtons() {
+        const btnContainer = document.getElementById("action-buttons");
+        btnContainer.innerHTML = `
+            <button onclick="attack()">Attack</button>
+            <button onclick="usePotion()">Drink Potion</button>
+            <button onclick="flee()">Flee</button>
+        `;
     }
 
-    function updateQty(id, change) {
-      const item = cart.find(i => i.id === id);
-      if (item) {
-        item.qty += change;
-        if (item.qty <= 0) {
-          cart = cart.filter(i => i.id !== id);
+    function attack() {
+        let playerDamage = Math.floor(Math.random() * 6) + (player.attackPower - 2);
+        currentMonster.hp -= playerDamage;
+        log(`You strike the ${currentMonster.name} for <strong>${playerDamage}</strong> damage!`);
+
+        if (currentMonster.hp <= 0) {
+            log(`You defeated the ${currentMonster.name}! You found <strong>${currentMonster.reward}</strong> gold.`);
+            player.gold += currentMonster.reward;
+            updateStats();
+            renderTownButtons();
+            return;
         }
-      }
-      updateCartUI();
+
+        let monsterDamage = Math.max(1, Math.floor(Math.random() * 5) + (currentMonster.attack - 2));
+        player.hp -= monsterDamage;
+        log(`The ${currentMonster.name} attacks you for <strong>${monsterDamage}</strong> damage!`);
+
+        if (player.hp <= 0) {
+            player.hp = 0;
+            log("<strong style='color: #ff4d4d;'>You have fallen in battle... Game Over.</strong>");
+            renderGameOver();
+        }
+        updateStats();
     }
 
-    function updateCartUI() {
-      const cartItems = document.getElementById('cartItems');
-      const cartTotal = document.getElementById('cartTotal');
-      const cartBadge = document.getElementById('cartBadge');
-      const checkoutBtn = document.getElementById('checkoutBtn');
+    function usePotion() {
+        if (player.potions > 0) {
+            player.potions--;
+            player.hp = Math.min(player.maxHp, player.hp + 15);
+            log("You drink a healing potion and restore 15 HP!");
+            updateStats();
+        } else {
+            log("You don't have any potions!");
+        }
+    }
 
-      if (cart.length === 0) {
-        cartItems.innerHTML = '<p style="color: #777;">Your cart is empty.</p>';
-        cartTotal.textContent = '$0.00';
-        cartBadge.textContent = 'Cart: 0';
-        checkoutBtn.disabled = true;
-        return;
-      }
+    function flee() {
+        log("You fled back to the safety of the village.");
+        renderTownButtons();
+    }
 
-      cartItems.innerHTML = '';
-      let total = 0;
-      let count = 0;
-
-      cart.forEach(item => {
-        total += item.price * item.qty;
-        count += item.qty;
-
-        const li = document.createElement('li');
-        li.className = 'cart-item';
-        li.innerHTML = `
-          <span class="cart-item-title">${item.title}</span>
-          <div class="cart-item-controls">
-            <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
-            <span>${item.qty}</span>
-            <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
-          </div>
+    function visitShop() {
+        log("<strong>--- Ye Olde Armory ---</strong>");
+        const btnContainer = document.getElementById("action-buttons");
+        btnContainer.innerHTML = `
+            <button onclick="buyItem('potion')">Buy Potion (10 Gold)</button>
+            <button onclick="buyItem('sword')">Steel Broadsword (25 Gold)</button>
+            <button onclick="renderTownButtons()">Back to Village</button>
         `;
-        cartItems.appendChild(li);
-      });
-
-      cartTotal.textContent = `$${total.toFixed(2)}`;
-      cartBadge.textContent = `Cart: ${count}`;
-      checkoutBtn.disabled = false;
     }
 
-    function handleCheckout() {
-      alert('Order placed successfully! Thank you for ordering with BiteDash.');
-      cart = [];
-      updateCartUI();
+    function buyItem(item) {
+        if (item === 'potion') {
+            if (player.gold >= 10) {
+                player.gold -= 10;
+                player.potions++;
+                log("You purchased a Health Potion.");
+            } else {
+                log("Not enough gold!");
+            }
+        } else if (item === 'sword') {
+            if (player.gold >= 25) {
+                player.gold -= 25;
+                player.weapon = "Steel Broadsword";
+                player.attackPower = 10;
+                log("You bought and equipped the Steel Broadsword!");
+            } else {
+                log("Not enough gold!");
+            }
+        }
+        updateStats();
     }
 
-    // Initial Render
-    renderMenu();
-  </script>
+    function rest() {
+        if (player.gold >= 5) {
+            if (player.hp >= player.maxHp) {
+                log("You are already at full health!");
+                return;
+            }
+            player.gold -= 5;
+            player.hp = Math.min(player.maxHp, player.hp + 10);
+            log("You rest at the inn and restore 10 HP.");
+            updateStats();
+        } else {
+            log("You don't have enough gold to pay for a room.");
+        }
+    }
+
+    function renderGameOver() {
+        const btnContainer = document.getElementById("action-buttons");
+        btnContainer.innerHTML = `<button onclick="restartGame()" style="grid-column: span 2;">Play Again</button>`;
+    }
+
+    function restartGame() {
+        player = { hp: 30, maxHp: 30, gold: 10, potions: 1, weapon: "Iron Sword", attackPower: 6 };
+        document.getElementById("log-box").innerHTML = "Game restarted. Welcome back, brave knight!";
+        updateStats();
+        renderTownButtons();
+    }
+</script>
 
 </body>
 </html>
