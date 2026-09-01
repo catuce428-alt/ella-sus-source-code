@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tales of the Medieval Realm</title>
+    <style>
+        body {
+            background-color: #1a1412;
+            color: #e0d5c1;
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #game-container {
+            width: 600px;
+            background-color: #2b221e;
+            border: 4px solid #8b5a2b;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        h1 {
+            text-align: center;
+            color: #da10b;
+            border-bottom: 2px solid #8b5a2b;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        #stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background-color: #1a1412;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        #log-box {
+            height: 180px;
+            background-color: #0f0c0a;
+            border: 1px solid #5c4033;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        button {
+            background-color: #4a3525;
+            color: #f0e6d2;
+            border: 2px solid #8b5a2b;
+            padding: 12px;
+            font-family: 'Georgia', serif;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #6e4e37;
+        }
+
+        button:disabled {
+            background-color: #221c18;
+            color: #665c54;
+            border-color: #443c34;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>Medieval Quest</h1>
+    
+    <div id="stats-bar">
+        <span>HP: <span id="hp">30</span>/30</span>
+        <span>Gold: <span id="gold">10</span></span>
+        <span>Potions: <span id="potions">1</span></span>
+        <span>Weapon: <span id="weapon">Iron Sword</span></span>
+    </div>
+
+    <div id="log-box" id="log">Welcome, brave knight. Choose your action below to begin your journey...</div>
+
+    <div class="actions" id="action-buttons">
+        <button onclick="explore()">Explore Dark Forest</button>
+        <button onclick="visitShop()">Visit Shop</button>
+        <button onclick="rest()">Rest at Inn (5 Gold)</button>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+</div>
+
+<script>
+    let player = {
+        hp: 30,
+        maxHp: 30,
+        gold: 10,
+        potions: 1,
+        weapon: "Iron Sword",
+        attackPower: 6
+    };
+
+    let currentMonster = null;
+
+    const monsters = [
+        { name: "Goblin Scout", hp: 12, attack: 4, reward: 8 },
+        { name: "Forest Bandit", hp: 18, attack: 5, reward: 12 },
+        { name: "Armored Orc", hp: 25, attack: 7, reward: 20 }
+    ];
+
+    function log(message) {
+        const logBox = document.getElementById("log-box");
+        logBox.innerHTML += `<p style="margin: 5px 0;">${message}</p>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function updateStats() {
+        document.getElementById("hp").innerText = player.hp;
+        document.getElementById("gold").innerText = player.gold;
+        document.getElementById("potions").innerText = player.potions;
+        document.getElementById("weapon").innerText = player.weapon;
+    }
+
+    function renderTownButtons() {
+        const btnContainer = document.getElementById("action-buttons");
+        btnContainer.innerHTML = `
+            <button onclick="explore()">Explore Dark Forest</button>
+            <button onclick="visitShop()">Visit Shop</button>
+            <button onclick="rest()">Rest at Inn (5 Gold)</button>
+            <button onclick="restartGame()">Restart</button>
+        `;
+    }
+
+    function explore() {
+        if (player.hp <= 0) return;
+        const template = monsters
