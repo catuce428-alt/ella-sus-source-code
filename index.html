@@ -1,281 +1,406 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tales of the Medieval Realm</title>
-    <style>
-        body {
-            background-color: #1a1412;
-            color: #e0d5c1;
-            font-family: 'Georgia', serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Building with AI — Project Showcase</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            pink: {
+              50: '#fdf2f8',
+              100: '#fce7f3',
+              200: '#fbcfe8',
+              300: '#f9a8d4',
+              400: '#f472b6',
+              500: '#ec4899',
+              600: '#db2777',
+              700: '#be185d',
+              800: '#9d174d',
+              900: '#831843',
+            }
+          }
         }
+      }
+    }
+  </script>
 
-        #game-container {
-            width: 600px;
-            background-color: #2b221e;
-            border: 4px solid #8b5a2b;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
-        }
-
-        h1 {
-            text-align: center;
-            color: #dda10b;
-            border-bottom: 2px solid #8b5a2b;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-
-        #stats-bar {
-            display: flex;
-            justify-content: space-between;
-            background-color: #1a1412;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        #log-box {
-            height: 180px;
-            background-color: #0f0c0a;
-            border: 1px solid #5c4033;
-            border-radius: 4px;
-            padding: 10px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-            font-size: 0.95em;
-            line-height: 1.4;
-        }
-
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        button, .btn-link {
-            background-color: #4a3525;
-            color: #f0e6d2;
-            border: 2px solid #8b5a2b;
-            padding: 12px;
-            font-family: 'Georgia', serif;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background 0.2s;
-            text-decoration: none;
-            text-align: center;
-            display: inline-block;
-            box-sizing: border-box;
-        }
-
-        button:hover, .btn-link:hover {
-            background-color: #6e4e37;
-        }
-
-        button:disabled {
-            background-color: #221c18;
-            color: #665c54;
-            border-color: #443c34;
-            cursor: not-allowed;
-        }
-
-        .full-width-btn {
-            grid-column: span 2;
-        }
-    </style>
+  <style>
+    body {
+      background-color: #fff0f5;
+      color: #4a2e38;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 182, 193, 0.4);
+    }
+    .glass-nav {
+      background: rgba(255, 240, 245, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(249, 168, 212, 0.3);
+    }
+    .pink-glow {
+      box-shadow: 0 0 25px -5px rgba(236, 72, 153, 0.3);
+    }
+    .pink-glow-lg {
+      box-shadow: 0 12px 35px -8px rgba(236, 72, 153, 0.25);
+    }
+    #sparkle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
 </head>
-<body>
+<body class="font-sans antialiased min-h-screen relative overflow-x-hidden selection:bg-pink-300 selection:text-pink-900">
 
-<div id="game-container">
-    <h1>Medieval Quest</h1>
+  <canvas id="sparkle-canvas"></canvas>
+
+  <!-- Navigation Bar -->
+  <header class="sticky top-0 z-50 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-pink-300">
+          <i class="ph-bold ph-sparkle text-lg"></i>
+        </div>
+        <span class="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-pink-700 to-rose-500">
+          AI Lab Portfolio
+        </span>
+      </div>
+
+      <div class="flex items-center space-x-3 text-xs sm:text-sm">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-pink-100 text-pink-700 border border-pink-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
+          Building with AI Class
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20 space-y-12">
     
-    <div id="stats-bar">
-        <span>HP: <span id="hp">30</span>/30</span>
-        <span>Gold: <span id="gold">10</span></span>
-        <span>Potions: <span id="potions">1</span></span>
-        <span>Weapon: <span id="weapon">Iron Sword</span></span>
-    </div>
+    <!-- Hero Banner -->
+    <section class="glass-card rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-pink-200/60 shadow-xl pink-glow">
+      <div class="absolute -right-12 -top-12 w-64 h-64 bg-pink-300/30 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-12 -bottom-12 w-64 h-64 bg-rose-200/40 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div id="log-box">Welcome, brave knight. Choose your action below to begin your journey...</div>
-
-    <div class="actions" id="action-buttons">
-        <button onclick="explore()">Explore Dark Forest</button>
-        <button onclick="visitShop()">Visit Shop</button>
-        <button onclick="rest()">Rest at Inn (5 Gold)</button>
-        <button onclick="restartGame()">Restart</button>
-        <a href="medieval-run/index.html" class="btn-link full-width-btn">Play Medieval Run</a>
-    </div>
-</div>
-
-<script>
-    let player = {
-        hp: 30,
-        maxHp: 30,
-        gold: 10,
-        potions: 1,
-        weapon: "Iron Sword",
-        attackPower: 6
-    };
-
-    let currentMonster = null;
-
-    const monsters = [
-        { name: "Goblin Scout", hp: 12, attack: 4, reward: 8 },
-        { name: "Forest Bandit", hp: 18, attack: 5, reward: 12 },
-        { name: "Armored Orc", hp: 25, attack: 7, reward: 20 }
-    ];
-
-    function log(message) {
-        const logBox = document.getElementById("log-box");
-        logBox.innerHTML += `<p style="margin: 5px 0;">${message}</p>`;
-        logBox.scrollTop = logBox.scrollHeight;
-    }
-
-    function updateStats() {
-        document.getElementById("hp").innerText = player.hp;
-        document.getElementById("gold").innerText = player.gold;
-        document.getElementById("potions").innerText = player.potions;
-        document.getElementById("weapon").innerText = player.weapon;
-    }
-
-    function renderTownButtons() {
-        const btnContainer = document.getElementById("action-buttons");
-        btnContainer.innerHTML = `
-            <button onclick="explore()">Explore Dark Forest</button>
-            <button onclick="visitShop()">Visit Shop</button>
-            <button onclick="rest()">Rest at Inn (5 Gold)</button>
-            <button onclick="restartGame()">Restart</button>
-            <a href="medieval-run/index.html" class="btn-link full-width-btn">Play Medieval Run</a>
-        `;
-    }
-
-    function explore() {
-        if (player.hp <= 0) return;
-        const template = monsters[Math.floor(Math.random() * monsters.length)];
-        currentMonster = { ...template };
+      <div class="relative z-10 max-w-3xl space-y-5">
+        <div class="inline-flex items-center space-x-2 bg-pink-100/80 px-3.5 py-1.5 rounded-full border border-pink-200 text-pink-700 text-xs font-semibold tracking-wide uppercase">
+          <i class="ph-fill ph-code-simple"></i>
+          <span>Student AI Showcase</span>
+        </div>
         
-        log(`<strong>A wild ${currentMonster.name} steps from the shadows!</strong>`);
-        renderCombatButtons();
-    }
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-pink-950 tracking-tight leading-tight">
+          Welcome to my <span class="bg-gradient-to-r from-pink-600 via-rose-500 to-pink-500 bg-clip-text text-transparent">AI Project Hub</span> ✨
+        </h1>
+        
+        <p class="text-base sm:text-lg text-pink-900/80 leading-relaxed font-normal">
+          Explore the web apps, games, and intelligent prototypes created during my 
+          <strong class="text-pink-800 font-semibold">Building with AI</strong> course. More creations will be added as the class progresses!
+        </p>
 
-    function renderCombatButtons() {
-        const btnContainer = document.getElementById("action-buttons");
-        btnContainer.innerHTML = `
-            <button onclick="attack()">Attack</button>
-            <button onclick="usePotion()">Drink Potion</button>
-            <button onclick="flee()">Flee</button>
-        `;
-    }
+        <!-- Stats Chips -->
+        <div class="pt-2 flex flex-wrap gap-4 text-xs font-medium text-pink-800">
+          <div class="flex items-center space-x-2 bg-white/70 px-4 py-2 rounded-xl border border-pink-200/70 shadow-sm">
+            <i class="ph-bold ph-rocket-launch text-pink-500 text-base"></i>
+            <span><strong>1</strong> Live Project</span>
+          </div>
+          <div class="flex items-center space-x-2 bg-white/70 px-4 py-2 rounded-xl border border-pink-200/70 shadow-sm">
+            <i class="ph-bold ph-clock text-pink-500 text-base"></i>
+            <span><strong>3</strong> Planned Prototypes</span>
+          </div>
+          <div class="flex items-center space-x-2 bg-white/70 px-4 py-2 rounded-xl border border-pink-200/70 shadow-sm">
+            <i class="ph-bold ph-cpu text-pink-500 text-base"></i>
+            <span>Powered by LLMs & AI</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    function attack() {
-        let playerDamage = Math.floor(Math.random() * 6) + (player.attackPower - 2);
-        currentMonster.hp -= playerDamage;
-        log(`You strike the ${currentMonster.name} for <strong>${playerDamage}</strong> damage!`);
+    <!-- Projects Section Header & Filters -->
+    <section class="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pink-200/50 pb-4">
+        <div>
+          <h2 class="text-2xl font-bold text-pink-950 tracking-tight flex items-center gap-2">
+            <i class="ph-bold ph-squares-four text-pink-500"></i>
+            Project Showcase
+          </h2>
+          <p class="text-sm text-pink-800/70">Click on any ready project to launch it directly.</p>
+        </div>
 
-        if (currentMonster.hp <= 0) {
-            log(`You defeated the ${currentMonster.name}! You found <strong>${currentMonster.reward}</strong> gold.`);
-            player.gold += currentMonster.reward;
-            updateStats();
-            renderTownButtons();
-            return;
-        }
+        <!-- Filter Tags -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <button onclick="filterProjects('all')" id="btn-all" class="filter-btn active px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-pink-600 text-white shadow-md shadow-pink-300">
+            All Projects
+          </button>
+          <button onclick="filterProjects('game')" id="btn-game" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/80 text-pink-800 border border-pink-200 hover:bg-pink-100 transition-all">
+            Games
+          </button>
+          <button onclick="filterProjects('ai')" id="btn-ai" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/80 text-pink-800 border border-pink-200 hover:bg-pink-100 transition-all">
+            AI Apps
+          </button>
+        </div>
+      </div>
 
-        let monsterDamage = Math.max(1, Math.floor(Math.random() * 5) + (currentMonster.attack - 2));
-        player.hp -= monsterDamage;
-        log(`The ${currentMonster.name} attacks you for <strong>${monsterDamage}</strong> damage!`);
+      <!-- Project Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        if (player.hp <= 0) {
-            player.hp = 0;
-            log("<strong style='color: #ff4d4d;'>You have fallen in battle... Game Over.</strong>");
-            renderGameOver();
-        }
-        updateStats();
-    }
+        <!-- PROJECT 1: MEDIEVAL RUN (ACTIVE GAME) -->
+        <div class="project-card group glass-card rounded-2xl overflow-hidden border border-pink-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between" data-category="game">
+          <div>
+            <!-- Header Image / Banner preview -->
+            <div class="h-44 bg-gradient-to-br from-pink-400 via-rose-300 to-pink-200 relative overflow-hidden flex items-center justify-center">
+              <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all"></div>
+              
+              <!-- Icon/Visual element -->
+              <div class="text-center transform group-hover:scale-110 transition-transform duration-300">
+                <div class="w-16 h-16 bg-white/90 rounded-2xl mx-auto flex items-center justify-center shadow-lg text-pink-600 mb-2">
+                  <i class="ph-bold ph-sword text-3xl"></i>
+                </div>
+                <span class="text-xs font-bold text-pink-900 bg-white/80 px-3 py-1 rounded-full shadow-sm">HTML5 Canvas Game</span>
+              </div>
 
-    function usePotion() {
-        if (player.potions > 0) {
-            player.potions--;
-            player.hp = Math.min(player.maxHp, player.hp + 15);
-            log("You drink a healing potion and restore 15 HP!");
-            updateStats();
+              <!-- Status Badge -->
+              <span class="absolute top-3 right-3 bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                Playable Now
+              </span>
+            </div>
+
+            <!-- Content Body -->
+            <div class="p-6 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-pink-600 uppercase tracking-wider">Project #1</span>
+                <span class="text-xs text-pink-800/60">Arcade Runner</span>
+              </div>
+              <h3 class="text-xl font-bold text-pink-950 group-hover:text-pink-600 transition-colors">
+                Medieval Run ⚔️
+              </h3>
+              <p class="text-sm text-pink-900/80 leading-relaxed">
+                An interactive endless-runner quest across the kingdom! Avoid obstacles, collect items, and test your reflexes in this canvas game.
+              </p>
+            </div>
+          </div>
+
+          <!-- Action Button Footer -->
+          <div class="p-6 pt-0">
+            <a href="medieval-run/medieval-run.html" class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-sm shadow-md shadow-pink-300 hover:shadow-lg transition-all group-hover:pink-glow">
+              <span>Play Medieval Run</span>
+              <i class="ph-bold ph-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- PROJECT 2: AI STORY GENERATOR (UPCOMING) -->
+        <div class="project-card glass-card rounded-2xl overflow-hidden border border-pink-200/60 shadow-md opacity-85 hover:opacity-100 transition-all flex flex-col justify-between" data-category="ai">
+          <div>
+            <div class="h-44 bg-gradient-to-br from-pink-100 to-purple-200 relative overflow-hidden flex items-center justify-center">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-white/70 rounded-2xl mx-auto flex items-center justify-center shadow-md text-purple-600 mb-2">
+                  <i class="ph-bold ph-book-open-text text-3xl"></i>
+                </div>
+                <span class="text-xs font-semibold text-purple-800 bg-white/60 px-3 py-1 rounded-full">Generative Text</span>
+              </div>
+
+              <span class="absolute top-3 right-3 bg-pink-200 text-pink-800 text-[11px] font-bold px-2.5 py-1 rounded-full border border-pink-300">
+                Coming Soon
+              </span>
+            </div>
+
+            <div class="p-6 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-pink-600 uppercase tracking-wider">Project #2</span>
+                <span class="text-xs text-pink-800/60">LLM Application</span>
+              </div>
+              <h3 class="text-xl font-bold text-pink-950">
+                AI Quest Craft 📖
+              </h3>
+              <p class="text-sm text-pink-900/70 leading-relaxed">
+                An interactive choose-your-own-adventure story builder that generates customized fantasy lore on the fly using AI prompts.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-6 pt-0">
+            <button disabled class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-pink-100 text-pink-400 font-semibold text-sm cursor-not-allowed border border-pink-200">
+              <i class="ph-bold ph-lock-key"></i>
+              <span>In Development</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- PROJECT 3: AI VISION (UPCOMING) -->
+        <div class="project-card glass-card rounded-2xl overflow-hidden border border-pink-200/60 shadow-md opacity-85 hover:opacity-100 transition-all flex flex-col justify-between" data-category="ai">
+          <div>
+            <div class="h-44 bg-gradient-to-br from-rose-100 to-pink-200 relative overflow-hidden flex items-center justify-center">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-white/70 rounded-2xl mx-auto flex items-center justify-center shadow-md text-rose-600 mb-2">
+                  <i class="ph-bold ph-eye text-3xl"></i>
+                </div>
+                <span class="text-xs font-semibold text-rose-800 bg-white/60 px-3 py-1 rounded-full">Computer Vision</span>
+              </div>
+
+              <span class="absolute top-3 right-3 bg-pink-200 text-pink-800 text-[11px] font-bold px-2.5 py-1 rounded-full border border-pink-300">
+                Planned
+              </span>
+            </div>
+
+            <div class="p-6 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-pink-600 uppercase tracking-wider">Project #3</span>
+                <span class="text-xs text-pink-800/60">Vision Model</span>
+              </div>
+              <h3 class="text-xl font-bold text-pink-950">
+                Smart Image Scanner 👁️
+              </h3>
+              <p class="text-sm text-pink-900/70 leading-relaxed">
+                A web app that analyzes uploaded images or camera frames to identify medieval artifacts and describe them using AI.
+              </p>
+            </div>
+          </div>
+
+          <div class="p-6 pt-0">
+            <button disabled class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-pink-100 text-pink-400 font-semibold text-sm cursor-not-allowed border border-pink-200">
+              <i class="ph-bold ph-lock-key"></i>
+              <span>Coming Soon</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Course Info Section -->
+    <section class="glass-card rounded-2xl p-6 sm:p-8 border border-pink-200 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-2xl bg-pink-500 text-white flex items-center justify-center shrink-0 shadow-md">
+          <i class="ph-bold ph-graduation-cap text-2xl"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-pink-950 text-base">About Building with AI</h4>
+          <p class="text-sm text-pink-900/70">A hands-on class exploring web development, game logic, prompt engineering, and modern AI tools.</p>
+        </div>
+      </div>
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="shrink-0 px-4 py-2.5 rounded-xl bg-white hover:bg-pink-50 border border-pink-200 text-pink-700 font-semibold text-xs transition-colors flex items-center gap-2">
+        <i class="ph-bold ph-github-logo text-base"></i>
+        <span>Course Portfolio</span>
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="relative z-10 border-t border-pink-200/60 bg-white/40 backdrop-blur-md py-6 text-center text-xs text-pink-800/70">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>© Building with AI Project Hub. All rights reserved.</p>
+      <p class="flex items-center gap-1">
+        Made with <i class="ph-fill ph-heart text-pink-500"></i> & AI Assistance
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Filtering Logic
+    function filterProjects(category) {
+      const cards = document.querySelectorAll('.project-card');
+      const buttons = document.querySelectorAll('.filter-btn');
+
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-pink-600', 'text-white', 'shadow-md', 'shadow-pink-300');
+        btn.classList.add('bg-white/80', 'text-pink-800', 'border', 'border-pink-200');
+      });
+
+      const activeBtn = document.getElementById(`btn-${category}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white/80', 'text-pink-800', 'border', 'border-pink-200');
+        activeBtn.classList.add('bg-pink-600', 'text-white', 'shadow-md', 'shadow-pink-300');
+      }
+
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
+          card.style.display = 'flex';
         } else {
-            log("You don't have any potions!");
+          card.style.display = 'none';
         }
+      });
     }
 
-    function flee() {
-        log("You fled back to the safety of the village.");
-        renderTownButtons();
+    // Sparkle Background Canvas Effect
+    const canvas = document.getElementById('sparkle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
 
-    function visitShop() {
-        log("<strong>--- Ye Olde Armory ---</strong>");
-        const btnContainer = document.getElementById("action-buttons");
-        btnContainer.innerHTML = `
-            <button onclick="buyItem('potion')">Buy Potion (10 Gold)</button>
-            <button onclick="buyItem('sword')">Steel Broadsword (25 Gold)</button>
-            <button onclick="renderTownButtons()">Back to Village</button>
-        `;
-    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-    function buyItem(item) {
-        if (item === 'potion') {
-            if (player.gold >= 10) {
-                player.gold -= 10;
-                player.potions++;
-                log("You purchased a Health Potion.");
-            } else {
-                log("Not enough gold!");
-            }
-        } else if (item === 'sword') {
-            if (player.gold >= 25) {
-                player.gold -= 25;
-                player.weapon = "Steel Broadsword";
-                player.attackPower = 10;
-                log("You bought and equipped the Steel Broadsword!");
-            } else {
-                log("Not enough gold!");
-            }
+    class Sparkle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 4 + 1.5;
+        this.speedY = Math.random() * 0.4 + 0.1;
+        this.opacity = Math.random() * 0.5 + 0.2;
+        this.fadeSpeed = Math.random() * 0.005 + 0.002;
+      }
+
+      update() {
+        this.y -= this.speedY;
+        this.opacity -= this.fadeSpeed;
+
+        if (this.y < -10 || this.opacity <= 0) {
+          this.reset();
+          this.y = canvas.height + 10;
         }
-        updateStats();
+      }
+
+      draw() {
+        ctx.fillStyle = `rgba(236, 72, 153, ${this.opacity})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
-    function rest() {
-        if (player.gold >= 5) {
-            if (player.hp >= player.maxHp) {
-                log("You are already at full health!");
-                return;
-            }
-            player.gold -= 5;
-            player.hp = Math.min(player.maxHp, player.hp + 10);
-            log("You rest at the inn and restore 10 HP.");
-            updateStats();
-        } else {
-            log("You don't have enough gold to pay for a room.");
-        }
+    for (let i = 0; i < 45; i++) {
+      particles.push(new Sparkle());
     }
 
-    function renderGameOver() {
-        const btnContainer = document.getElementById("action-buttons");
-        btnContainer.innerHTML = `<button onclick="restartGame()" style="grid-column: span 2;">Play Again</button>`;
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
     }
 
-    function restartGame() {
-        player = { hp: 30, maxHp: 30, gold: 10, potions: 1, weapon: "Iron Sword", attackPower: 6 };
-        document.getElementById("log-box").innerHTML = "Game restarted. Welcome back, brave knight!";
-        updateStats();
-        renderTownButtons();
-    }
-</script>
-
+    animate();
+  </script>
 </body>
 </html>
