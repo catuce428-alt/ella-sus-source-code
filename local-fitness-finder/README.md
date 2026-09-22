@@ -1,8 +1,8 @@
 # Local Fitness Finder
 
-An app for sharing and finding local exercise classes, groups, and races.
+An app for sharing and finding local exercise classes, groups, and races, backed by Supabase.
 
-## Current state — fake data phase
+## Current state — connected to Supabase
 
 Per the plan: no database yet. `index.html` is fully self-contained and runs
 on ~20 made-up listings, kept in one clearly marked block near the top of
@@ -46,4 +46,5 @@ Open `index.html` directly in a browser — nothing to install, no build step.
 
 - `index.html` — the whole app
 - `schema.sql` — database schema, ready to run when needed
-- `config.js` — Supabase credentials, ready to wire in when needed
+- `config.js` — Supabase public URL and publishable key
+- `local-fitness-tracker/index.html` — optional separate tracker page, expected to be deployed beside this app

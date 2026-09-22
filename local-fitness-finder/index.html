@@ -203,6 +203,7 @@
       <h1>Local Fitness Finder</h1>
     </div>
     <p>Find a class, a group, or a race happening near you — or share one you know about.</p>
+    <div style="margin-top:12px"><a href="./local-fitness-tracker/index.html" style="color:#fff;text-decoration:underline;font-size:13px">Open Local Fitness Tracker</a></div>
     <div class="tabs">
       <button class="tab active" id="tabLook" onclick="showView('look')">Find Fitness</button>
       <button class="tab" id="tabAdd" onclick="showView('add')">Share a Listing</button>
@@ -305,39 +306,61 @@
 
 </main>
 
-<footer>Local Fitness Finder — built with fake data for now.</footer>
+<footer>Local Fitness Finder — powered by Supabase.</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
 <script>
 /* =====================================================================
-   FAKE DATA — swap this array for a real database call later.
-   Each row matches the "fitness_listings" table in schema.sql exactly:
-   name, title, location, date_time, cost, target_age, category
+   SUPABASE DATA
+   Listings are loaded from public.fitness_listings.
    ===================================================================== */
-let listings = [
-  {name:"Maria Chen", title:"Saturday Morning Trail Run", location:"Riverside Park", date_time:"2026-10-04T08:00", cost:0, target_age:"Adults 18+", category:"Recreational Groups"},
-  {name:"Coach Dario", title:"Beginner Boxing Fundamentals", location:"Eastside Rec Center", date_time:"2026-10-06T18:30", cost:15, target_age:"Adults 18+", category:"Lessons"},
-  {name:"Priya Shah", title:"Youth Soccer Skills Clinic", location:"Maple Field", date_time:"2026-10-05T10:00", cost:10, target_age:"Teens under 14", category:"Lessons"},
-  {name:"James Okafor", title:"City 5K Fun Run", location:"Downtown Plaza", date_time:"2026-11-02T09:00", cost:20, target_age:"Adults 18+", category:"Upcoming Races"},
-  {name:"Lena Fischer", title:"Sunrise Yoga in the Park", location:"Greenview Park", date_time:"2026-10-05T07:00", cost:5, target_age:"Adults 18+", category:"Recreational Groups"},
-  {name:"Coach Tomas", title:"Junior Basketball League", location:"Westside Gym", date_time:"2026-10-11T16:00", cost:35, target_age:"Teens under 14", category:"Competitive Leagues"},
-  {name:"Aisha Bello", title:"Adult Beginner Swim Lessons", location:"Community Pool", date_time:"2026-10-07T19:00", cost:25, target_age:"Adults 18+", category:"Lessons"},
-  {name:"Noah Kim", title:"Pickup Ultimate Frisbee", location:"Lincoln Field", date_time:"2026-10-04T17:00", cost:0, target_age:"Adults 18+", category:"Recreational Groups"},
-  {name:"Coach Renee", title:"Kids Gymnastics Intro Class", location:"Sunnydale Rec Center", date_time:"2026-10-08T15:30", cost:18, target_age:"Teens under 14", category:"Lessons"},
-  {name:"Marcus Diallo", title:"Half Marathon Training Group", location:"Riverside Park", date_time:"2026-10-06T06:30", cost:0, target_age:"Adults 18+", category:"Recreational Groups"},
-  {name:"Sofia Rossi", title:"Teen Volleyball League", location:"Eastside Gym", date_time:"2026-10-09T16:30", cost:30, target_age:"Teens under 14", category:"Competitive Leagues"},
-  {name:"Coach Abe", title:"Adult Rec Softball League", location:"North Diamond Fields", date_time:"2026-10-12T18:00", cost:40, target_age:"Adults 18+", category:"Competitive Leagues"},
-  {name:"Hannah Lee", title:"Fall Color 10K", location:"Hillcrest Trailhead", date_time:"2026-10-25T08:30", cost:22, target_age:"Adults 18+", category:"Upcoming Races"},
-  {name:"Coach Miguel", title:"Youth Track & Field Camp", location:"Central High Track", date_time:"2026-10-10T15:00", cost:12, target_age:"Teens under 14", category:"Lessons"},
-  {name:"Ellie Novak", title:"Beginner Rock Climbing Night", location:"Boulder House Gym", date_time:"2026-10-07T19:30", cost:20, target_age:"Adults 18+", category:"Lessons"},
-  {name:"Coach Trent", title:"Kids Mini Triathlon", location:"Lakeside Park", date_time:"2026-11-08T09:00", cost:15, target_age:"Teens under 14", category:"Upcoming Races"},
-  {name:"Zara Ahmed", title:"Casual Pickup Basketball", location:"Westside Gym", date_time:"2026-10-04T18:00", cost:0, target_age:"Adults 18+", category:"Recreational Groups"},
-  {name:"Coach Nia", title:"Adult Tennis Ladder League", location:"City Tennis Courts", date_time:"2026-10-13T17:00", cost:28, target_age:"Adults 18+", category:"Competitive Leagues"},
-  {name:"Oliver Grant", title:"Teen Skateboarding Basics", location:"Riverside Skatepark", date_time:"2026-10-09T15:00", cost:8, target_age:"Teens under 14", category:"Lessons"},
-  {name:"Devon Marsh", title:"Turkey Trot 5K", location:"Downtown Plaza", date_time:"2026-11-27T08:00", cost:18, target_age:"Adults 18+", category:"Upcoming Races"}
-];
-/* ===================================================================== */
-
+let listings = [];
+let supabaseClient = null;
 const MAX_VISIBLE = 300;
+
+function initSupabase(){
+  const cfg = window.FITNESS_CONFIG || {};
+  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_KEY) {
+    throw new Error("Supabase configuration is missing.");
+  }
+  supabaseClient = window.supabase.createClient(
+    cfg.SUPABASE_URL,
+    cfg.SUPABASE_KEY
+  );
+}
+
+async function loadListings(){
+  const container = document.getElementById('listingsContainer');
+  const resultCount = document.getElementById('resultCount');
+
+  container.innerHTML = `
+    <div class="empty-state">
+      <h3>Loading listings...</h3>
+      <p>Getting the latest fitness listings.</p>
+    </div>`;
+  resultCount.textContent = '';
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('fitness_listings')
+      .select('*')
+      .order('date_time', { ascending: true });
+
+    if (error) throw error;
+
+    listings = Array.isArray(data) ? data : [];
+    renderListings();
+  } catch (error) {
+    console.error('Supabase load error:', error);
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>Couldn't load listings</h3>
+        <p>Please refresh the page and try again.</p>
+      </div>`;
+    resultCount.textContent = '';
+  }
+}
 
 function showView(view){
   document.getElementById('viewLook').classList.toggle('active', view === 'look');
@@ -417,9 +440,10 @@ function renderListings(){
   }
 }
 
-document.getElementById('addForm').addEventListener('submit', function(e){
+document.getElementById('addForm').addEventListener('submit', async function(e){
   e.preventDefault();
   const msg = document.getElementById('formMsg');
+  const submitButton = this.querySelector('button[type="submit"]');
 
   const name = document.getElementById('fName').value.trim();
   const title = document.getElementById('fTitle').value.trim();
@@ -435,7 +459,7 @@ document.getElementById('addForm').addEventListener('submit', function(e){
     return;
   }
   if(Number(cost) < 0){
-    msg.textContent = 'Cost can\'t be negative.';
+    msg.textContent = 'Cost can\\'t be negative.';
     msg.className = 'form-msg err';
     return;
   }
@@ -445,12 +469,52 @@ document.getElementById('addForm').addEventListener('submit', function(e){
     return;
   }
 
-  listings.unshift({name, title, location, date_time: dateTime, cost: Number(cost), target_age: age, category});
+  submitButton.disabled = true;
+  msg.textContent = 'Sharing listing...';
+  msg.className = 'form-msg';
 
-  this.reset();
-  msg.textContent = 'Listing shared! Switch to "Find Fitness" to see it.';
-  msg.className = 'form-msg ok';
+  try {
+    const { data, error } = await supabaseClient
+      .from('fitness_listings')
+      .insert({
+        name,
+        title,
+        location,
+        date_time: new Date(dateTime).toISOString(),
+        cost: Number(cost),
+        target_age: age,
+        category
+      })
+      .select('*')
+      .single();
+
+    if (error) throw error;
+
+    if (data) listings.unshift(data);
+    this.reset();
+    msg.textContent = 'Listing shared! Switch to "Find Fitness" to see it.';
+    msg.className = 'form-msg ok';
+    renderListings();
+  } catch (error) {
+    console.error('Supabase insert error:', error);
+    msg.textContent = 'Couldn\\'t share the listing. Please try again.';
+    msg.className = 'form-msg err';
+  } finally {
+    submitButton.disabled = false;
+  }
 });
+
+try {
+  initSupabase();
+  loadListings();
+} catch (error) {
+  console.error(error);
+  document.getElementById('listingsContainer').innerHTML = `
+    <div class="empty-state">
+      <h3>Database configuration missing</h3>
+      <p>Please check config.js.</p>
+    </div>`;
+}
 
 renderListings();
 </script>
