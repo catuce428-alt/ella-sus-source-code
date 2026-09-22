@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Local Fitness Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f8f3;
+    --surface:#ffffff;
+    --surface-2:#eef3e9;
+    --ink:#152420;
+    --muted:#5c6d64;
+    --line:#dbe4d6;
+    --teal:#1b4b43;
+    --teal-dark:#0f332d;
+    --amber:#ef9f2e;
+    --amber-dark:#c97f16;
+    --coral:#e0623f;
+    --shadow:0 14px 34px rgba(21,36,32,.10);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Karla',system-ui,sans-serif;
+    line-height:1.5;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  h1,h2,h3{font-family:'Outfit',sans-serif;margin:0}
+  button,input,select{font:inherit;color:inherit}
+  .wrap{width:min(100% - 40px,980px);margin:0 auto}
+  .wrap{width:calc(100% - 40px);max-width:980px}
+
+  header.top{
+    background:var(--teal);
+    color:#fff;
+    padding:34px 0 30px;
+  }
+  header.top .wrap{display:flex;flex-direction:column;gap:18px}
+  .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .brand h1{font-size:clamp(28px,4vw,38px);letter-spacing:-.01em}
+  .brand p{margin:0;color:#cfe0d8;font-size:15px;max-width:520px}
+
+  .tabs{display:flex;gap:8px}
+  .tab{
+    border:1.5px solid rgba(255,255,255,.35);
+    background:transparent;
+    color:#fff;
+    padding:10px 18px;
+    border-radius:999px;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .tab:hover{border-color:#fff}
+  .tab.active{background:#fff;color:var(--teal-dark);border-color:#fff}
+
+  main{padding:34px 0 70px}
+  .view{display:none}
+  .view.active{display:block}
+
+  /* ---------- Looking view ---------- */
+  .toolbar{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    margin-bottom:26px;
+    box-shadow:var(--shadow);
+  }
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12.5px;font-weight:600;color:var(--muted)}
+  select, .text-input{
+    border:1.5px solid var(--line);
+    border-radius:9px;
+    padding:9px 12px;
+    background:var(--surface);
+    min-width:190px;
+  }
+  select:focus, .text-input:focus, button:focus-visible{
+    outline:2px solid var(--teal);
+    outline-offset:2px;
+  }
+  .result-count{margin-left:auto;color:var(--muted);font-size:14px;align-self:center}
+
+  .listings{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:16px;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    box-shadow:var(--shadow);
+  }
+  .card .cat{
+    display:inline-flex;
+    align-self:flex-start;
+    font-size:12px;
+    font-weight:700;
+    padding:5px 11px;
+    border-radius:999px;
+    background:var(--surface-2);
+    color:var(--teal-dark);
+  }
+  .card h3{font-size:19px;line-height:1.25}
+  .card .meta{font-size:13.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+  .card .price{
+    margin-top:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-top:10px;
+    border-top:1px solid var(--line);
+  }
+  .card .price b{font-size:18px;color:var(--teal-dark)}
+  .card .age{font-size:12.5px;color:var(--coral);font-weight:600}
+
+  .empty-state{
+    text-align:center;
+    padding:70px 20px;
+    background:var(--surface);
+    border:1.5px dashed var(--line);
+    border-radius:var(--radius);
+    color:var(--muted);
+  }
+  .empty-state h3{color:var(--ink);font-size:22px;margin-bottom:6px}
+
+  .cap-note{margin:18px 0 0;font-size:13px;color:var(--muted);text-align:center}
+
+  /* ---------- Adding view ---------- */
+  .form-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow:var(--shadow);
+    max-width:640px;
+  }
+  .form-card h2{font-size:24px;margin-bottom:6px}
+  .form-card>p{color:var(--muted);margin:0 0 22px;font-size:14.5px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .form-grid .field.full{grid-column:1/-1}
+  .field input, .field select{width:100%}
+  .char-count{font-size:11.5px;color:var(--muted);text-align:right}
+  .submit-row{margin-top:22px;display:flex;align-items:center;gap:14px}
+  .btn-primary{
+    background:var(--amber);
+    color:var(--teal-dark);
+    border:none;
+    padding:13px 24px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .btn-primary:hover{background:var(--amber-dark);color:#fff}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+  .form-msg{font-size:14px}
+  .form-msg.ok{color:var(--teal-dark)}
+  .form-msg.err{color:var(--coral)}
+  .required-note{font-size:12px;color:var(--muted);margin-top:4px}
+
+  footer{
+    text-align:center;
+    padding:26px 0 50px;
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  @media (max-width:640px){
+    .form-grid{grid-template-columns:1fr}
+    .toolbar{flex-direction:column;align-items:stretch}
+    .result-count{margin-left:0}
+    select{min-width:0}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1>Local Fitness Finder</h1>
+    </div>
+    <p>Find a class, a group, or a race happening near you — or share one you know about.</p>
+    <div class="tabs">
+      <button class="tab active" id="tabLook" onclick="showView('look')">Find Fitness</button>
+      <button class="tab" id="tabAdd" onclick="showView('add')">Share a Listing</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- LOOKING VIEW -->
+  <section class="view active" id="viewLook">
+    <div class="toolbar">
+      <div class="field">
+        <label for="filterCategory">Category</label>
+        <select id="filterCategory" onchange="renderListings()">
+          <option value="">All categories</option>
+          <option>Lessons</option>
+          <option>Recreational Groups</option>
+          <option>Competitive Leagues</option>
+          <option>Upcoming Races</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filterAge">Age group</label>
+        <select id="filterAge" onchange="renderListings()">
+          <option value="">Any age group</option>
+          <option>Teens under 14</option>
+          <option>Adults 18+</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sortPrice">Sort by price</label>
+        <select id="sortPrice" onchange="renderListings()">
+          <option value="">Featured order</option>
+          <option value="low">Low to high</option>
+          <option value="high">High to low</option>
+        </select>
+      </div>
+      <span class="result-count" id="resultCount"></span>
+    </div>
+
+    <div id="listingsContainer"></div>
+    <p class="cap-note" id="capNote" style="display:none"></p>
+  </section>
+
+  <!-- ADDING VIEW -->
+  <section class="view" id="viewAdd">
+    <div class="form-card">
+      <h2>Share a listing</h2>
+      <p>Fill in the details below. Listings can't be edited or removed once shared, so double check before submitting.</p>
+      <form id="addForm" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="fName">Your name</label>
+            <input class="text-input" type="text" id="fName" maxlength="500" required>
+          </div>
+          <div class="field">
+            <label for="fTitle">Class or group name</label>
+            <input class="text-input" type="text" id="fTitle" maxlength="500" required>
+          </div>
+          <div class="field full">
+            <label for="fLocation">Neighborhood or area</label>
+            <input class="text-input" type="text" id="fLocation" maxlength="500" required>
+          </div>
+          <div class="field">
+            <label for="fDateTime">Date &amp; time</label>
+            <input class="text-input" type="datetime-local" id="fDateTime" required>
+          </div>
+          <div class="field">
+            <label for="fCost">Cost ($)</label>
+            <input class="text-input" type="number" id="fCost" min="0" step="0.01" required>
+          </div>
+          <div class="field">
+            <label for="fAge">Age group</label>
+            <select id="fAge" required>
+              <option value="" disabled selected>Choose one</option>
+              <option>Teens under 14</option>
+              <option>Adults 18+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="fCategory">Category</label>
+            <select id="fCategory" required>
+              <option value="" disabled selected>Choose one</option>
+              <option>Lessons</option>
+              <option>Recreational Groups</option>
+              <option>Competitive Leagues</option>
+              <option>Upcoming Races</option>
+            </select>
+          </div>
+        </div>
+        <p class="required-note">All fields are required. Text fields are capped at 500 characters.</p>
+        <div class="submit-row">
+          <button type="submit" class="btn-primary">Share listing</button>
+          <span class="form-msg" id="formMsg"></span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer>Local Fitness Finder — built with fake data for now.</footer>
+
+<script>
+/* =====================================================================
+   FAKE DATA — swap this array for a real database call later.
+   Each row matches the "fitness_listings" table in schema.sql exactly:
+   name, title, location, date_time, cost, target_age, category
+   ===================================================================== */
+let listings = [
+  {name:"Maria Chen", title:"Saturday Morning Trail Run", location:"Riverside Park", date_time:"2026-10-04T08:00", cost:0, target_age:"Adults 18+", category:"Recreational Groups"},
+  {name:"Coach Dario", title:"Beginner Boxing Fundamentals", location:"Eastside Rec Center", date_time:"2026-10-06T18:30", cost:15, target_age:"Adults 18+", category:"Lessons"},
+  {name:"Priya Shah", title:"Youth Soccer Skills Clinic", location:"Maple Field", date_time:"2026-10-05T10:00", cost:10, target_age:"Teens under 14", category:"Lessons"},
+  {name:"James Okafor", title:"City 5K Fun Run", location:"Downtown Plaza", date_time:"2026-11-02T09:00", cost:20, target_age:"Adults 18+", category:"Upcoming Races"},
+  {name:"Lena Fischer", title:"Sunrise Yoga in the Park", location:"Greenview Park", date_time:"2026-10-05T07:00", cost:5, target_age:"Adults 18+", category:"Recreational Groups"},
+  {name:"Coach Tomas", title:"Junior Basketball League", location:"Westside Gym", date_time:"2026-10-11T16:00", cost:35, target_age:"Teens under 14", category:"Competitive Leagues"},
+  {name:"Aisha Bello", title:"Adult Beginner Swim Lessons", location:"Community Pool", date_time:"2026-10-07T19:00", cost:25, target_age:"Adults 18+", category:"Lessons"},
+  {name:"Noah Kim", title:"Pickup Ultimate Frisbee", location:"Lincoln Field", date_time:"2026-10-04T17:00", cost:0, target_age:"Adults 18+", category:"Recreational Groups"},
+  {name:"Coach Renee", title:"Kids Gymnastics Intro Class", location:"Sunnydale Rec Center", date_time:"2026-10-08T15:30", cost:18, target_age:"Teens under 14", category:"Lessons"},
+  {name:"Marcus Diallo", title:"Half Marathon Training Group", location:"Riverside Park", date_time:"2026-10-06T06:30", cost:0, target_age:"Adults 18+", category:"Recreational Groups"},
+  {name:"Sofia Rossi", title:"Teen Volleyball League", location:"Eastside Gym", date_time:"2026-10-09T16:30", cost:30, target_age:"Teens under 14", category:"Competitive Leagues"},
+  {name:"Coach Abe", title:"Adult Rec Softball League", location:"North Diamond Fields", date_time:"2026-10-12T18:00", cost:40, target_age:"Adults 18+", category:"Competitive Leagues"},
+  {name:"Hannah Lee", title:"Fall Color 10K", location:"Hillcrest Trailhead", date_time:"2026-10-25T08:30", cost:22, target_age:"Adults 18+", category:"Upcoming Races"},
+  {name:"Coach Miguel", title:"Youth Track & Field Camp", location:"Central High Track", date_time:"2026-10-10T15:00", cost:12, target_age:"Teens under 14", category:"Lessons"},
+  {name:"Ellie Novak", title:"Beginner Rock Climbing Night", location:"Boulder House Gym", date_time:"2026-10-07T19:30", cost:20, target_age:"Adults 18+", category:"Lessons"},
+  {name:"Coach Trent", title:"Kids Mini Triathlon", location:"Lakeside Park", date_time:"2026-11-08T09:00", cost:15, target_age:"Teens under 14", category:"Upcoming Races"},
+  {name:"Zara Ahmed", title:"Casual Pickup Basketball", location:"Westside Gym", date_time:"2026-10-04T18:00", cost:0, target_age:"Adults 18+", category:"Recreational Groups"},
+  {name:"Coach Nia", title:"Adult Tennis Ladder League", location:"City Tennis Courts", date_time:"2026-10-13T17:00", cost:28, target_age:"Adults 18+", category:"Competitive Leagues"},
+  {name:"Oliver Grant", title:"Teen Skateboarding Basics", location:"Riverside Skatepark", date_time:"2026-10-09T15:00", cost:8, target_age:"Teens under 14", category:"Lessons"},
+  {name:"Devon Marsh", title:"Turkey Trot 5K", location:"Downtown Plaza", date_time:"2026-11-27T08:00", cost:18, target_age:"Adults 18+", category:"Upcoming Races"}
+];
+/* ===================================================================== */
+
+const MAX_VISIBLE = 300;
+
+function showView(view){
+  document.getElementById('viewLook').classList.toggle('active', view === 'look');
+  document.getElementById('viewAdd').classList.toggle('active', view === 'add');
+  document.getElementById('tabLook').classList.toggle('active', view === 'look');
+  document.getElementById('tabAdd').classList.toggle('active', view === 'add');
+  if(view === 'look') renderListings();
+}
+
+function formatDateTime(value){
+  const d = new Date(value);
+  if(isNaN(d)) return value;
+  return d.toLocaleString(undefined, {weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'});
+}
+
+function formatCost(cost){
+  return cost === 0 ? 'Free' : `$${Number(cost).toFixed(2)}`;
+}
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderListings(){
+  const category = document.getElementById('filterCategory').value;
+  const age = document.getElementById('filterAge').value;
+  const sort = document.getElementById('sortPrice').value;
+
+  let filtered = listings.filter(l =>
+    (!category || l.category === category) &&
+    (!age || l.target_age === age)
+  );
+
+  if(sort === 'low') filtered = [...filtered].sort((a,b) => a.cost - b.cost);
+  if(sort === 'high') filtered = [...filtered].sort((a,b) => b.cost - a.cost);
+
+  const total = filtered.length;
+  const capped = filtered.slice(0, MAX_VISIBLE);
+
+  document.getElementById('resultCount').textContent =
+    total === 0 ? '' : `${total} listing${total === 1 ? '' : 's'}`;
+
+  const container = document.getElementById('listingsContainer');
+  const capNote = document.getElementById('capNote');
+
+  if(capped.length === 0){
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>The ball's in your court</h3>
+        <p>— app is waiting for uploads.</p>
+      </div>`;
+    capNote.style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = `<div class="listings">${capped.map(l => `
+    <article class="card">
+      <span class="cat">${escapeHtml(l.category)}</span>
+      <h3>${escapeHtml(l.title)}</h3>
+      <div class="meta">
+        <span>${escapeHtml(l.location)}</span>
+        <span>${formatDateTime(l.date_time)}</span>
+        <span>Shared by ${escapeHtml(l.name)}</span>
+      </div>
+      <div class="price">
+        <b>${formatCost(l.cost)}</b>
+        <span class="age">${escapeHtml(l.target_age)}</span>
+      </div>
+    </article>
+  `).join('')}</div>`;
+
+  if(total > MAX_VISIBLE){
+    capNote.style.display = 'block';
+    capNote.textContent = `Showing the first ${MAX_VISIBLE} of ${total} listings.`;
+  } else {
+    capNote.style.display = 'none';
+  }
+}
+
+document.getElementById('addForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const msg = document.getElementById('formMsg');
+
+  const name = document.getElementById('fName').value.trim();
+  const title = document.getElementById('fTitle').value.trim();
+  const location = document.getElementById('fLocation').value.trim();
+  const dateTime = document.getElementById('fDateTime').value;
+  const cost = document.getElementById('fCost').value;
+  const age = document.getElementById('fAge').value;
+  const category = document.getElementById('fCategory').value;
+
+  if(!name || !title || !location || !dateTime || cost === '' || !age || !category){
+    msg.textContent = 'Please fill in every field before sharing.';
+    msg.className = 'form-msg err';
+    return;
+  }
+  if(Number(cost) < 0){
+    msg.textContent = 'Cost can\'t be negative.';
+    msg.className = 'form-msg err';
+    return;
+  }
+  if(name.length > 500 || title.length > 500 || location.length > 500){
+    msg.textContent = 'Please keep each field under 500 characters.';
+    msg.className = 'form-msg err';
+    return;
+  }
+
+  listings.unshift({name, title, location, date_time: dateTime, cost: Number(cost), target_age: age, category});
+
+  this.reset();
+  msg.textContent = 'Listing shared! Switch to "Find Fitness" to see it.';
+  msg.className = 'form-msg ok';
+});
+
+renderListings();
+</script>
+
+</body>
+</html>
