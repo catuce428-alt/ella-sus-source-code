@@ -185,7 +185,7 @@
         <!-- Category 2: Classes -->
         <button onclick="selectCategory('Classes')" class="bg-white hover:bg-emerald-50 border border-stone-200 hover:border-emerald-500 p-4 rounded-xl text-center space-y-2 transition group shadow-sm">
           <div class="w-10 h-10 mx-auto rounded-full bg-amber-100 text-[#c97f16] flex items-center justify-center text-lg group-hover:scale-110 transition">
-            <i class="fa-solid fa-[#1b4b43] fa-person-dots-from-line"></i>
+            <i class="fa-solid fa-person-dots-from-line"></i>
           </div>
           <div class="font-bold text-xs text-stone-800 group-hover:text-emerald-800">Classes</div>
         </button>
@@ -382,7 +382,7 @@
 
     <div class="flex items-center gap-3">
       <div class="w-12 h-12 rounded-full bg-[#1b4b43] text-[#ef9f2e] flex items-center justify-center text-xl font-bold">
-        <i class="fa-solid fa-[#ef9f2e] fa-heart-pulse"></i>
+        <i class="fa-solid fa-heart-pulse text-[#ef9f2e]"></i>
       </div>
       <div>
         <h3 class="text-xl font-bold text-stone-900">About Local Fitness Finder</h3>
@@ -422,7 +422,8 @@
    ===================================================================== */
 window.FITNESS_CONFIG = {
   SUPABASE_URL: "https://sayvdhthkbuwcbzlnmnz.supabase.co",
-  SUPABASE_KEY: "sb_publishable_bmZF5fAuoWyvAyKjVAU3Lw_WIkJ5jil"
+  // REPLACE BELOW WITH YOUR SUPABASE ANON KEY (Starts with "eyJhbGci...")
+  SUPABASE_KEY: "YOUR_SUPABASE_ANON_KEY_HERE"
 };
 
 let listings = [];
@@ -513,14 +514,16 @@ async function loadListings() {
       <p class="text-sm font-bold text-stone-600">Loading fitness listings...</p>
     </div>`;
 
-  if (supabaseClient) {
+  if (supabaseClient && window.FITNESS_CONFIG.SUPABASE_KEY !== "YOUR_SUPABASE_ANON_KEY_HERE") {
     try {
       const { data, error } = await supabaseClient
         .from('fitness_listings')
         .select('*')
         .order('date_time', { ascending: true });
 
-      if (!error && Array.isArray(data) && data.length > 0) {
+      if (error) {
+        console.error("Supabase load error:", error.message, error);
+      } else if (Array.isArray(data) && data.length > 0) {
         listings = data;
         renderListings();
         return;
@@ -530,7 +533,7 @@ async function loadListings() {
     }
   }
 
-  // Fallback to sample listings
+  // Fallback to sample listings if key is missing/invalid or table empty
   listings = [...SAMPLE_LISTINGS];
   renderListings();
 }
@@ -709,7 +712,7 @@ document.getElementById('addForm').addEventListener('submit', async function(e) 
   msg.textContent = 'Publishing your listing...';
   msg.className = 'text-xs font-bold text-emerald-700 py-2';
 
-  if (supabaseClient) {
+  if (supabaseClient && window.FITNESS_CONFIG.SUPABASE_KEY !== "YOUR_SUPABASE_ANON_KEY_HERE") {
     try {
       const { data, error } = await supabaseClient
         .from('fitness_listings')
@@ -725,7 +728,10 @@ document.getElementById('addForm').addEventListener('submit', async function(e) 
         .select('*')
         .single();
 
-      if (!error && data) {
+      if (error) {
+        console.error("Supabase insert error:", error.message, error);
+        listings.unshift(newListing);
+      } else if (data) {
         listings.unshift(data);
       } else {
         listings.unshift(newListing);
