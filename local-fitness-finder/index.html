@@ -6,25 +6,28 @@
 <title>Local Fitness Finder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Karla:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
   :root {
-    --bg: #f6f8f3;
+    --bg: #f5f8f4;
     --surface: #ffffff;
-    --surface-2: #eef3e9;
-    --ink: #152420;
-    --muted: #5c6d64;
-    --line: #dbe4d6;
-    --teal: #1b4b43;
-    --teal-dark: #0f332d;
-    --amber: #ef9f2e;
-    --amber-dark: #c97f16;
-    --coral: #e0623f;
-    --shadow: 0 14px 34px rgba(21,36,32,.08);
-    --radius: 16px;
+    --surface-2: #eaf1e7;
+    --ink: #10231d;
+    --muted: #53665c;
+    --line: #d8e2d5;
+    --teal: #144037;
+    --teal-dark: #0a2620;
+    --emerald-accent: #10b981;
+    --amber: #f59e0b;
+    --amber-dark: #d97706;
+    --coral: #ef4444;
+    --shadow: 0 16px 36px rgba(16, 35, 29, 0.08);
+    --radius: 20px;
   }
+  
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
@@ -34,118 +37,107 @@
     font-family: 'Karla', system-ui, -apple-system, sans-serif;
     line-height: 1.5;
   }
-  h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; margin: 0; }
   
-  .wrap { width: min(100% - 32px, 1040px); margin: 0 auto; }
-  
-  header.top {
-    background: linear-gradient(135deg, #1b4b43 0%, #0f332d 100%);
-    color: #fff;
-    padding: 32px 0 28px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  h1, h2, h3, h4, h5 { font-family: 'Outfit', sans-serif; margin: 0; }
+  .wrap { width: min(100% - 32px, 1080px); margin: 0 auto; }
+
+  /* Animated Blob Buttons */
+  .blob-btn {
+    position: relative;
+    padding: 24px 28px;
+    border-radius: 40px 18px 45px 22px;
+    background: linear-gradient(135deg, #1d5348 0%, #0f332d 100%);
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(15, 51, 45, 0.25);
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .blob-btn-alt {
+    border-radius: 22px 42px 20px 48px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #0f332d;
+    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .blob-btn:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(15, 51, 45, 0.35);
+    border-color: rgba(255, 255, 255, 0.4);
   }
   
+  .blob-btn-alt:hover {
+    box-shadow: 0 20px 40px rgba(245, 158, 11, 0.45);
+  }
+
+  /* Pulse Mottos Tag */
+  .motto-badge {
+    animation: pulseGlow 3s infinite alternate ease-in-out;
+  }
+  @keyframes pulseGlow {
+    0% { transform: scale(1); opacity: 0.95; }
+    100% { transform: scale(1.03); opacity: 1; }
+  }
+
+  /* Category Column Cards */
+  .category-card {
+    background: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: 18px;
+    padding: 18px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .category-card:hover {
+    border-color: var(--teal);
+    background: var(--surface-2);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(20, 64, 55, 0.12);
+  }
+  .category-card.selected {
+    border-color: var(--teal);
+    background: var(--teal);
+    color: #fff;
+  }
+  .category-card.selected p {
+    color: #d1fae5;
+  }
+
+  /* Custom tabs & buttons */
   .tabs { display: flex; gap: 10px; }
   .tab {
     border: 1.5px solid rgba(255,255,255,.3);
-    background: rgba(255,255,255,.05);
+    background: rgba(255,255,255,.08);
     color: #fff;
-    padding: 10px 20px;
+    padding: 10px 22px;
     border-radius: 999px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
     cursor: pointer;
     transition: all .2s ease;
   }
-  .tab:hover { border-color: #fff; background: rgba(255,255,255,.15); }
-  .tab.active { background: #fff; color: var(--teal-dark); border-color: #fff; font-weight: 700; }
+  .tab:hover { border-color: #fff; background: rgba(255,255,255,.2); }
+  .tab.active { background: #fff; color: var(--teal-dark); border-color: #fff; }
 
   .view { display: none; }
-  .view.active { display: block; animation: fadeIn 0.25s ease-out; }
+  .view.active { display: block; animation: fadeIn 0.3s ease-out; }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  .toolbar {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 20px;
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow);
-  }
-
-  .field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
-  .field label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
-  select, .text-input {
-    border: 1.5px solid var(--line);
-    border-radius: 10px;
-    padding: 10px 14px;
-    background: var(--surface);
-    font-size: 14.5px;
-    transition: border-color .15s ease, box-shadow .15s ease;
-  }
-  select:focus, .text-input:focus {
-    outline: none;
-    border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(27,75,67,0.15);
-  }
-
-  .listings {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-    gap: 20px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 40px rgba(21,36,32,.12);
-  }
-
-  .card .cat-badge {
-    display: inline-flex;
-    align-self: flex-start;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.03em;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: var(--surface-2);
-    color: var(--teal-dark);
-    text-transform: uppercase;
-  }
-
-  .card h3 { font-size: 20px; font-weight: 700; line-height: 1.3; color: var(--teal-dark); }
-  .card .meta { font-size: 13.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
-  .card .meta-item { display: flex; align-items: center; gap: 8px; }
-
-  .card .price-row {
-    margin-top: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 12px;
-    border-top: 1px solid var(--line);
-  }
-  .card .price-tag { font-size: 19px; font-weight: 800; color: var(--teal-dark); }
-  .card .age-badge { font-size: 12px; color: var(--coral); font-weight: 700; background: #fdf0ed; padding: 3px 10px; border-radius: 6px; }
 
   .btn-primary {
     background: var(--amber);
@@ -156,40 +148,30 @@
     font-weight: 800;
     font-size: 15px;
     cursor: pointer;
-    transition: all .15s ease;
-    box-shadow: 0 4px 12px rgba(239, 159, 46, 0.3);
+    transition: all .2s ease;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
   }
   .btn-primary:hover { background: var(--amber-dark); color: #fff; transform: translateY(-1px); }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
   .btn-secondary {
     background: var(--surface-2);
     color: var(--teal-dark);
     border: 1px solid var(--line);
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: 700;
     font-size: 13px;
     cursor: pointer;
     transition: background 0.15s ease;
   }
-  .btn-secondary:hover { background: #e0ebd9; }
-
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    background: var(--surface);
-    border: 2px dashed var(--line);
-    border-radius: var(--radius);
-    color: var(--muted);
-  }
+  .btn-secondary:hover { background: #d7e5d3; }
 
   /* Modal styling */
   .modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(15, 51, 45, 0.6);
-    backdrop-filter: blur(4px);
+    background: rgba(10, 38, 32, 0.7);
+    backdrop-filter: blur(6px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -197,7 +179,7 @@
     z-index: 100;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.25s ease;
   }
   .modal-backdrop.open {
     opacity: 1;
@@ -205,97 +187,209 @@
   }
   .modal-box {
     background: var(--surface);
-    border-radius: 20px;
-    width: min(100%, 540px);
-    padding: 28px;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-    transform: scale(0.95);
-    transition: transform 0.2s ease;
+    border-radius: 24px;
+    width: min(100%, 560px);
+    padding: 30px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    transform: scale(0.92);
+    transition: transform 0.25s ease;
   }
   .modal-backdrop.open .modal-box { transform: scale(1); }
 </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-<header class="top">
-  <div class="wrap flex flex-col gap-5">
+<header class="bg-gradient-to-br from-teal-950 via-teal-900 to-emerald-950 text-white pt-8 pb-12 shadow-xl border-b border-teal-800/40">
+  <div class="wrap flex flex-col gap-6">
+    
+    <!-- Top Bar Navigation -->
     <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <div class="flex items-center gap-3">
-          <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Local Fitness Finder</h1>
-          <span id="statusBadge" class="hidden sm:inline-flex text-xs font-bold bg-amber-400 text-teal-950 px-2.5 py-1 rounded-full uppercase tracking-wider">
-            ⚡ Ready
-          </span>
-        </div>
-        <p class="text-emerald-100 text-sm md:text-base mt-1 max-w-xl">
-          Discover local classes, running groups, pickup leagues, and upcoming races near you.
-        </p>
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">⚡</span>
+        <span id="statusBadge" class="text-xs font-extrabold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 px-3 py-1 rounded-full uppercase tracking-wider">
+          Ready & Live
+        </span>
+      </div>
+      <div class="tabs">
+        <button class="tab active" id="tabLook" onclick="showView('look')">
+          🔍 Discover Fitness
+        </button>
+        <button class="tab" id="tabAdd" onclick="showView('add')">
+          ➕ Share a Listing
+        </button>
       </div>
     </div>
 
-    <div class="tabs pt-2">
-      <button class="tab active" id="tabLook" onclick="showView('look')">
-        🔍 Find Fitness
-      </button>
-      <button class="tab" id="tabAdd" onclick="showView('add')">
-        ➕ Share a Listing
-      </button>
+    <!-- Hero Banner with Welcome Sign & Good Vibes Mottos -->
+    <div class="text-center md:text-left py-6 px-6 md:px-10 rounded-3xl bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl relative overflow-hidden">
+      <div class="absolute -right-10 -top-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Welcome Sign Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 font-bold text-xs md:text-sm uppercase tracking-widest mb-3 motto-badge">
+        <span>🔥 Welcome Sign</span>
+      </div>
+
+      <!-- Big Welcome Title -->
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
+        WELCOME TO YOUR <br class="hidden sm:inline"/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-emerald-300">LOCAL FITNESS FINDER</span>
+      </h1>
+
+      <!-- Sports Mottos & Good Vibes Text -->
+      <p class="text-emerald-100 text-base md:text-lg mt-3 max-w-2xl font-medium leading-relaxed">
+        "Sweat today, smile tomorrow." — Your ultimate community hub for classes, local run clubs, high-energy coaching, and neighborhood games!
+      </p>
+
+      <!-- Good Vibes Banner Pills -->
+      <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 mt-5">
+        <span class="bg-emerald-800/60 border border-emerald-600/40 text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-full">
+          ✨ Good Vibes Only
+        </span>
+        <span class="bg-emerald-800/60 border border-emerald-600/40 text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-full">
+          💪 Move Together, Grow Together
+        </span>
+        <span class="bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs font-bold px-3 py-1.5 rounded-full">
+          🏆 No Excuses, Just Energy!
+        </span>
+      </div>
     </div>
+
+    <!-- Two Interactive Clickable Blobs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
+      <!-- Blob 1: About Us -->
+      <div class="blob-btn" onclick="openAboutModal()">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-300">Discover Our Vibe</span>
+          <h3 class="text-2xl font-black text-white">About Us 🌟</h3>
+          <p class="text-xs text-emerald-100/80 font-medium">Learn about our mission to bring local fitness lovers together.</p>
+        </div>
+        <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl shrink-0 border border-white/20">
+          ➔
+        </div>
+      </div>
+
+      <!-- Blob 2: Find Fitness Near Me -->
+      <div class="blob-btn blob-btn-alt" onclick="scrollToDiscovery()">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-extrabold uppercase tracking-widest text-teal-950">Instant Search</span>
+          <h3 class="text-2xl font-black text-teal-950">Find Fitness Near Me 📍</h3>
+          <p class="text-xs text-teal-900/80 font-medium">Explore gyms, races, trainers, and classes in your area.</p>
+        </div>
+        <div class="w-12 h-12 rounded-full bg-teal-950/10 flex items-center justify-center text-xl shrink-0 border border-teal-950/20">
+          👇
+        </div>
+      </div>
+    </div>
+
   </div>
 </header>
 
-<main class="wrap my-8 flex-1">
+<main class="wrap my-10 flex-1">
 
-  <!-- LOOKING VIEW -->
+  <!-- LOOKING / DISCOVERY VIEW -->
   <section class="view active" id="viewLook">
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <div class="field" style="flex: 2; min-width: 200px;">
-        <label for="searchQuery">Search keyword</label>
-        <input type="text" id="searchQuery" class="text-input" placeholder="Search title, neighborhood, host..." oninput="renderListings()">
+    
+    <!-- CATEGORIES COLUMNS GRID SECTION (Target of "Find Fitness Near Me" Blob) -->
+    <div id="discoverySection" class="mb-10 scroll-mt-6">
+      <div class="flex flex-wrap justify-between items-end gap-3 mb-5">
+        <div>
+          <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wider">Explore By Category</span>
+          <h2 class="text-2xl md:text-3xl font-black text-teal-950">Find Fitness Near Me</h2>
+        </div>
+        <button class="text-xs font-bold text-teal-800 hover:underline bg-emerald-100/60 px-3 py-1.5 rounded-lg" onclick="resetCategoryFilter()">
+          Show All Categories
+        </button>
       </div>
-      <div class="field">
-        <label for="filterCategory">Category</label>
-        <select id="filterCategory" onchange="renderListings()">
-          <option value="">All categories</option>
-          <option>Lessons</option>
-          <option>Recreational Groups</option>
-          <option>Competitive Leagues</option>
-          <option>Upcoming Races</option>
-        </select>
+
+      <!-- 6 Category Columns Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        
+        <!-- Column 1: Gyms -->
+        <div class="category-card" id="catCard-Gyms" onclick="selectCategoryCard('Gyms')">
+          <span class="text-3xl mb-1">🏋️‍♂️</span>
+          <h4 class="font-extrabold text-sm">Gyms</h4>
+          <p class="text-xs text-stone-500 font-semibold">4 Local Hubs</p>
+        </div>
+
+        <!-- Column 2: Classes -->
+        <div class="category-card" id="catCard-Classes" onclick="selectCategoryCard('Classes')">
+          <span class="text-3xl mb-1">🧘‍♀️</span>
+          <h4 class="font-extrabold text-sm">Classes</h4>
+          <p class="text-xs text-stone-500 font-semibold">Yoga & HIIT</p>
+        </div>
+
+        <!-- Column 3: Marathons & Races -->
+        <div class="category-card" id="catCard-Races" onclick="selectCategoryCard('Marathons & Races')">
+          <span class="text-3xl mb-1">🏃‍♂️</span>
+          <h4 class="font-extrabold text-sm">Races</h4>
+          <p class="text-xs text-stone-500 font-semibold">5K to 10K</p>
+        </div>
+
+        <!-- Column 4: Coaches / Trainers -->
+        <div class="category-card" id="catCard-Coaches" onclick="selectCategoryCard('Coaches/Trainers')">
+          <span class="text-3xl mb-1">👟</span>
+          <h4 class="font-extrabold text-sm">Trainers</h4>
+          <p class="text-xs text-stone-500 font-semibold">1-on-1 Coaching</p>
+        </div>
+
+        <!-- Column 5: Recreational Groups -->
+        <div class="category-card" id="catCard-Rec" onclick="selectCategoryCard('Recreational Groups')">
+          <span class="text-3xl mb-1">🤝</span>
+          <h4 class="font-extrabold text-sm">Rec Groups</h4>
+          <p class="text-xs text-stone-500 font-semibold">Social Runs & Play</p>
+        </div>
+
+        <!-- Column 6: Competitive Leagues -->
+        <div class="category-card" id="catCard-Leagues" onclick="selectCategoryCard('Competitive Leagues/Teams')">
+          <span class="text-3xl mb-1">🏆</span>
+          <h4 class="font-extrabold text-sm">Leagues</h4>
+          <p class="text-xs text-stone-500 font-semibold">Teams & Tourneys</p>
+        </div>
+
       </div>
-      <div class="field">
-        <label for="filterAge">Age group</label>
-        <select id="filterAge" onchange="renderListings()">
-          <option value="">Any age group</option>
+    </div>
+
+    <!-- Filter and Search Toolbar -->
+    <div class="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm mb-6 flex flex-wrap gap-4 items-end">
+      <div class="flex-1 min-w-[200px]">
+        <label for="searchQuery" class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Search Keyword</label>
+        <input type="text" id="searchQuery" class="w-full border-1.5 border-stone-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-700" placeholder="Search title, location, instructor..." oninput="renderListings()">
+      </div>
+      
+      <div>
+        <label for="filterAge" class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Age Target</label>
+        <select id="filterAge" class="border-1.5 border-stone-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-700 bg-white min-w-[150px]" onchange="renderListings()">
+          <option value="">Any Age Group</option>
           <option>Teens under 14</option>
           <option>Teens 14-17</option>
           <option>Adults 18+</option>
           <option>All Ages</option>
         </select>
       </div>
-      <div class="field">
-        <label for="sortPrice">Sort by</label>
-        <select id="sortPrice" onchange="renderListings()">
-          <option value="featured">Featured / Soonest</option>
+
+      <div>
+        <label for="sortPrice" class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Sort By</label>
+        <select id="sortPrice" class="border-1.5 border-stone-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-700 bg-white min-w-[150px]" onchange="renderListings()">
+          <option value="featured">Soonest First</option>
           <option value="low">Price: Low to High</option>
           <option value="high">Price: High to Low</option>
         </select>
       </div>
-      <div class="flex items-center gap-2 pb-2 self-end">
+
+      <div class="flex items-center gap-2 py-2">
         <input type="checkbox" id="freeOnly" class="w-4 h-4 accent-teal-800 cursor-pointer" onchange="renderListings()">
-        <label for="freeOnly" class="text-xs font-bold text-slate-700 cursor-pointer uppercase tracking-wider">Free Only</label>
+        <label for="freeOnly" class="text-xs font-bold text-stone-700 cursor-pointer uppercase tracking-wider">Free Only</label>
       </div>
     </div>
 
     <!-- Live Counter and Feed -->
     <div class="flex justify-between items-center mb-4 px-1">
-      <span class="text-sm font-semibold text-emerald-900" id="resultCount">Loading listings...</span>
-      <button class="text-xs font-bold text-teal-800 hover:underline" onclick="resetFilters()">Reset Filters</button>
+      <span class="text-sm font-extrabold text-teal-950" id="resultCount">Loading listings...</span>
+      <button class="text-xs font-bold text-teal-800 hover:underline" onclick="resetFilters()">Clear Filters</button>
     </div>
 
     <div id="listingsContainer"></div>
-    <p class="mt-6 text-xs text-center text-slate-500" id="capNote" style="display:none"></p>
   </section>
 
   <!-- ADDING VIEW -->
@@ -303,34 +397,34 @@
     <div class="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-md max-w-2xl mx-auto">
       <div class="border-b border-stone-100 pb-4 mb-6">
         <h2 class="text-2xl font-bold text-teal-950">Share a Fitness Listing</h2>
-        <p class="text-stone-500 text-sm mt-1">Post your upcoming activity to help local fitness enthusiasts join in.</p>
+        <p class="text-stone-500 text-sm mt-1">Post your gym, class, race, group, or training session to the community.</p>
       </div>
 
       <form id="addForm" novalidate onsubmit="handleFormSubmit(event)">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="field">
-            <label for="fName">Your Name / Host</label>
-            <input class="text-input" type="text" id="fName" maxlength="100" placeholder="e.g. Sarah M." required>
+          <div>
+            <label for="fName" class="block text-xs font-bold text-stone-500 uppercase mb-1">Your Name / Host</label>
+            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="text" id="fName" maxlength="100" placeholder="e.g. Coach Alex" required>
           </div>
-          <div class="field">
-            <label for="fTitle">Activity / Group Title</label>
-            <input class="text-input" type="text" id="fTitle" maxlength="150" placeholder="e.g. Saturday Morning Park Yoga" required>
+          <div>
+            <label for="fTitle" class="block text-xs font-bold text-stone-500 uppercase mb-1">Activity / Listing Title</label>
+            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="text" id="fTitle" maxlength="150" placeholder="e.g. Sunset Pilates on the Lawn" required>
           </div>
-          <div class="field md:col-span-2">
-            <label for="fLocation">Neighborhood or Location</label>
-            <input class="text-input" type="text" id="fLocation" maxlength="200" placeholder="e.g. Waterfront Park, Central Lawn" required>
+          <div class="md:col-span-2">
+            <label for="fLocation" class="block text-xs font-bold text-stone-500 uppercase mb-1">Neighborhood or Location</label>
+            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="text" id="fLocation" maxlength="200" placeholder="e.g. Waterfront Park, Central Lawn" required>
           </div>
-          <div class="field">
-            <label for="fDateTime">Date & Time</label>
-            <input class="text-input" type="datetime-local" id="fDateTime" required>
+          <div>
+            <label for="fDateTime" class="block text-xs font-bold text-stone-500 uppercase mb-1">Date & Time</label>
+            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="datetime-local" id="fDateTime" required>
           </div>
-          <div class="field">
-            <label for="fCost">Cost ($ USD, enter 0 for free)</label>
-            <input class="text-input" type="number" id="fCost" min="0" step="0.01" placeholder="0.00" required>
+          <div>
+            <label for="fCost" class="block text-xs font-bold text-stone-500 uppercase mb-1">Cost ($ USD, enter 0 for free)</label>
+            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="number" id="fCost" min="0" step="0.01" placeholder="0.00" required>
           </div>
-          <div class="field">
-            <label for="fAge">Target Age Group</label>
-            <select id="fAge" required>
+          <div>
+            <label for="fAge" class="block text-xs font-bold text-stone-500 uppercase mb-1">Target Age Group</label>
+            <select id="fAge" class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm bg-white" required>
               <option value="" disabled selected>Select age target...</option>
               <option>Teens under 14</option>
               <option>Teens 14-17</option>
@@ -338,19 +432,19 @@
               <option>All Ages</option>
             </select>
           </div>
-          <div class="field">
-            <label for="fCategory">Category</label>
-            <select id="fCategory" required>
+          <div>
+            <label for="fCategory" class="block text-xs font-bold text-stone-500 uppercase mb-1">Category Column</label>
+            <select id="fCategory" class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm bg-white" required>
               <option value="" disabled selected>Select category...</option>
-              <option>Lessons</option>
+              <option>Gyms</option>
+              <option>Classes</option>
+              <option>Marathons & Races</option>
+              <option>Coaches/Trainers</option>
               <option>Recreational Groups</option>
-              <option>Competitive Leagues</option>
-              <option>Upcoming Races</option>
+              <option>Competitive Leagues/Teams</option>
             </select>
           </div>
         </div>
-
-        <p class="text-xs text-stone-500 mt-4">All fields are required. Listings will instantly appear on the discovery tab.</p>
 
         <div class="mt-6 flex flex-wrap items-center gap-4">
           <button type="submit" id="btnSubmit" class="btn-primary">
@@ -364,36 +458,67 @@
 
 </main>
 
+<!-- ABOUT US MODAL -->
+<div id="aboutModal" class="modal-backdrop" onclick="closeAboutModalOnBackdrop(event)">
+  <div class="modal-box">
+    <div class="flex justify-between items-start gap-3 pb-3 border-b border-stone-100">
+      <div>
+        <span class="text-xs font-extrabold px-3 py-1 rounded-full bg-amber-100 text-amber-900 uppercase tracking-wider">🌟 Community First</span>
+        <h3 class="text-2xl font-black text-teal-950 mt-2">About Local Fitness Finder</h3>
+      </div>
+      <button onclick="closeAboutModal()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold px-2">&times;</button>
+    </div>
+
+    <div class="py-4 space-y-3 text-stone-700 text-sm leading-relaxed">
+      <p>
+        <strong>Local Fitness Finder</strong> was built with a simple mission: to make staying active fun, inclusive, and effortlessly accessible for everyone in our community!
+      </p>
+      <p>
+        Whether you are looking for an early morning yoga session, a personal trainer to hit your personal best, an adult recreational soccer team, or a competitive marathon, we connect local fitness hosts with energetic people like you.
+      </p>
+      <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-teal-950 font-semibold space-y-1">
+        <div>✨ <strong>100% Community Driven:</strong> Anyone can post a listing or group.</div>
+        <div>💪 <strong>Zero Hidden Fees:</strong> Free to search and join open activities.</div>
+        <div>🏆 <strong>Good Vibes Guaranteed:</strong> All fitness levels welcomed with open arms!</div>
+      </div>
+    </div>
+
+    <div class="pt-4 border-t border-stone-100 flex justify-end">
+      <button class="btn-primary" onclick="closeAboutModal()">Got It!</button>
+    </div>
+  </div>
+</div>
+
 <!-- DETAILS MODAL -->
 <div id="detailsModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
   <div class="modal-box">
     <div class="flex justify-between items-start gap-3 pb-3 border-b border-stone-100">
       <div>
-        <span id="modalCat" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-teal-900 uppercase">Category</span>
-        <h3 id="modalTitle" class="text-2xl font-bold text-teal-950 mt-2">Activity Title</h3>
+        <span id="modalCat" class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-teal-900 uppercase">Category</span>
+        <h3 id="modalTitle" class="text-2xl font-black text-teal-950 mt-2">Activity Title</h3>
       </div>
-      <button onclick="closeModal()" class="text-stone-400 hover:text-stone-700 text-xl font-bold px-2">&times;</button>
+      <button onclick="closeModal()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold px-2">&times;</button>
     </div>
 
     <div class="py-4 space-y-3 text-stone-700 text-sm">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-24">Location:</span>
+        <span class="font-bold text-teal-900 w-28">Location:</span>
         <span id="modalLoc" class="font-medium">Neighborhood</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-24">Date & Time:</span>
+        <span class="font-bold text-teal-900 w-28">Date & Time:</span>
         <span id="modalTime" class="font-medium">Time</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-24">Host / Name:</span>
+        <span class="font-bold text-teal-900 w-28">Host / Name:</span>
         <span id="modalHost" class="font-medium">Host</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-24">Age Target:</span>
+        <span class="font-bold text-teal-900 w-28">Age Target:</span>
         <span id="modalAge" class="font-medium">Age</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-24">Cost:</span>
+        <span class="font-bold text-teal-900 w-28">Cost:</span>
         <span id="modalCost" class="font-bold text-emerald-700 text-base">$0.00</span>
       </div>
     </div>
@@ -405,17 +530,17 @@
   </div>
 </div>
 
-<footer class="text-center py-6 border-t border-stone-200 text-stone-500 text-xs">
-  Local Fitness Finder — Powered by dynamic local search &amp; community events.
+<footer class="text-center py-8 border-t border-stone-200 text-stone-500 text-xs">
+  Local Fitness Finder — Powered by community events &amp; good sports vibes.
 </footer>
 
 <script>
-// Default initial listings to guarantee immediate automatic playability out-of-the-box
+// Sample multi-category listings so app works instantly out-of-the-box
 const SAMPLE_LISTINGS = [
   {
     id: "sample-1",
     title: "Sunrise Community Yoga",
-    category: "Lessons",
+    category: "Classes",
     location: "Greenbelt Park Lawn",
     date_time: new Date(Date.now() + 86400000).toISOString(),
     name: "Elena Rostova",
@@ -424,6 +549,16 @@ const SAMPLE_LISTINGS = [
   },
   {
     id: "sample-2",
+    title: "Metro Power Fitness & Weight Room Pass",
+    category: "Gyms",
+    location: "Downtown Fitness Hub",
+    date_time: new Date(Date.now() + 100000000).toISOString(),
+    name: "Metro Power Gym",
+    cost: 12,
+    target_age: "Adults 18+"
+  },
+  {
+    id: "sample-3",
     title: "Weekly 5K Social Trail Run",
     category: "Recreational Groups",
     location: "Pine Hill Trailhead",
@@ -433,19 +568,19 @@ const SAMPLE_LISTINGS = [
     target_age: "Adults 18+"
   },
   {
-    id: "sample-3",
-    title: "Youth Soccer Skills Clinic",
-    category: "Lessons",
-    location: "Community Center Field 2",
-    date_time: new Date(Date.now() + 259200000).toISOString(),
+    id: "sample-4",
+    title: "1-on-1 Personalized Strength Coaching",
+    category: "Coaches/Trainers",
+    location: "Apex Athletic Center",
+    date_time: new Date(Date.now() + 200000000).toISOString(),
     name: "Coach David",
-    cost: 15,
-    target_age: "Teens under 14"
+    cost: 40,
+    target_age: "All Ages"
   },
   {
-    id: "sample-4",
+    id: "sample-5",
     title: "3v3 Summer Hoops Tournament",
-    category: "Competitive Leagues",
+    category: "Competitive Leagues/Teams",
     location: "Downtown Outdoor Courts",
     date_time: new Date(Date.now() + 345600000).toISOString(),
     name: "Metro Rec Club",
@@ -453,56 +588,38 @@ const SAMPLE_LISTINGS = [
     target_age: "Teens 14-17"
   },
   {
-    id: "sample-5",
+    id: "sample-6",
     title: "Autumn Harbor 10K & Fun Run",
-    category: "Upcoming Races",
+    category: "Marathons & Races",
     location: "Harbor Boardwalk Plaza",
     date_time: new Date(Date.now() + 518400000).toISOString(),
     name: "City Striders",
-    cost: 35,
+    cost: 30,
     target_age: "All Ages"
-  },
-  {
-    id: "sample-6",
-    title: "Beginner Outdoor HIIT Bootcamp",
-    category: "Lessons",
-    location: "Memorial Park Amphitheater",
-    date_time: new Date(Date.now() + 100000000).toISOString(),
-    name: "FitNation Crew",
-    cost: 10,
-    target_age: "Adults 18+"
   }
 ];
 
 let listings = [];
+let selectedCategoryFilter = "";
 let supabaseClient = null;
-const MAX_VISIBLE = 300;
 
 function initBackend() {
   const badge = document.getElementById('statusBadge');
-  
-  // Try to load from Supabase if window.FITNESS_CONFIG is supplied in external script
   try {
     const cfg = window.FITNESS_CONFIG || {};
     if (cfg.SUPABASE_URL && cfg.SUPABASE_KEY && window.supabase) {
       supabaseClient = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_KEY);
       badge.textContent = "🟢 Live Database";
-      badge.className = "hidden sm:inline-flex text-xs font-bold bg-emerald-400 text-teal-950 px-2.5 py-1 rounded-full uppercase tracking-wider";
     } else {
-      throw new Error("No external Supabase config found; standard local mode engaged.");
+      throw new Error("No external Supabase config found");
     }
   } catch (err) {
-    // Graceful automatic local mode fallback
     supabaseClient = null;
-    badge.textContent = "⚡ Auto Local Mode";
-    badge.className = "hidden sm:inline-flex text-xs font-bold bg-amber-400 text-teal-950 px-2.5 py-1 rounded-full uppercase tracking-wider";
+    badge.textContent = "⚡ Local Ready Mode";
   }
 }
 
 async function loadListings() {
-  const container = document.getElementById('listingsContainer');
-  const resultCount = document.getElementById('resultCount');
-
   if (supabaseClient) {
     try {
       const { data, error } = await supabaseClient
@@ -513,14 +630,11 @@ async function loadListings() {
       if (error) throw error;
       listings = Array.isArray(data) && data.length > 0 ? data : [...SAMPLE_LISTINGS];
     } catch (error) {
-      console.warn('Supabase fetch failed, utilizing sample listings:', error);
       listings = [...SAMPLE_LISTINGS];
     }
   } else {
-    // Default to sample listings immediately
     listings = [...SAMPLE_LISTINGS];
   }
-
   renderListings();
 }
 
@@ -530,6 +644,70 @@ function showView(view) {
   document.getElementById('tabLook').classList.toggle('active', view === 'look');
   document.getElementById('tabAdd').classList.toggle('active', view === 'add');
   if (view === 'look') renderListings();
+}
+
+function scrollToDiscovery() {
+  showView('look');
+  const section = document.getElementById('discoverySection');
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function openAboutModal() {
+  document.getElementById('aboutModal').classList.add('open');
+}
+
+function closeAboutModal() {
+  document.getElementById('aboutModal').classList.remove('open');
+}
+
+function closeAboutModalOnBackdrop(e) {
+  if (e.target.id === 'aboutModal') closeAboutModal();
+}
+
+function selectCategoryCard(catName) {
+  selectedCategoryFilter = catName;
+  
+  // Highlight UI cards
+  const catMap = {
+    'Gyms': 'catCard-Gyms',
+    'Classes': 'catCard-Classes',
+    'Marathons & Races': 'catCard-Races',
+    'Coaches/Trainers': 'catCard-Coaches',
+    'Recreational Groups': 'catCard-Rec',
+    'Competitive Leagues/Teams': 'catCard-Leagues'
+  };
+
+  Object.values(catMap).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('selected');
+  });
+
+  if (catMap[catName]) {
+    const activeEl = document.getElementById(catMap[catName]);
+    if (activeEl) activeEl.classList.add('selected');
+  }
+
+  renderListings();
+}
+
+function resetCategoryFilter() {
+  selectedCategoryFilter = "";
+  const ids = ['catCard-Gyms', 'catCard-Classes', 'catCard-Races', 'catCard-Coaches', 'catCard-Rec', 'catCard-Leagues'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('selected');
+  });
+  renderListings();
+}
+
+function resetFilters() {
+  document.getElementById('searchQuery').value = '';
+  document.getElementById('filterAge').value = '';
+  document.getElementById('sortPrice').value = 'featured';
+  document.getElementById('freeOnly').checked = false;
+  resetCategoryFilter();
 }
 
 function formatDateTime(value) {
@@ -555,18 +733,8 @@ function escapeHtml(str) {
   }[m]));
 }
 
-function resetFilters() {
-  document.getElementById('searchQuery').value = '';
-  document.getElementById('filterCategory').value = '';
-  document.getElementById('filterAge').value = '';
-  document.getElementById('sortPrice').value = 'featured';
-  document.getElementById('freeOnly').checked = false;
-  renderListings();
-}
-
 function renderListings() {
   const search = document.getElementById('searchQuery').value.toLowerCase().trim();
-  const category = document.getElementById('filterCategory').value;
   const age = document.getElementById('filterAge').value;
   const sort = document.getElementById('sortPrice').value;
   const freeOnly = document.getElementById('freeOnly').checked;
@@ -577,76 +745,62 @@ function renderListings() {
       (l.location && l.location.toLowerCase().includes(search)) ||
       (l.name && l.name.toLowerCase().includes(search));
     
-    const matchesCategory = !category || l.category === category;
+    const matchesCategory = !selectedCategoryFilter || l.category === selectedCategoryFilter;
     const matchesAge = !age || l.target_age === age;
     const matchesFree = !freeOnly || Number(l.cost) === 0;
 
     return matchesSearch && matchesCategory && matchesAge && matchesFree;
   });
 
-  // Sorting logic
   if (sort === 'low') {
     filtered.sort((a, b) => Number(a.cost) - Number(b.cost));
   } else if (sort === 'high') {
     filtered.sort((a, b) => Number(b.cost) - Number(a.cost));
   } else {
-    // Featured / Soonest date
     filtered.sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
   }
 
   const total = filtered.length;
-  const capped = filtered.slice(0, MAX_VISIBLE);
-
   document.getElementById('resultCount').textContent =
-    total === 0 ? 'No matching listings found' : `Showing ${total} fitness listing${total === 1 ? '' : 's'}`;
+    total === 0 ? 'No matching listings found' : `Showing ${total} fitness listing${total === 1 ? '' : 's'}${selectedCategoryFilter ? ` in ${selectedCategoryFilter}` : ''}`;
 
   const container = document.getElementById('listingsContainer');
-  const capNote = document.getElementById('capNote');
 
-  if (capped.length === 0) {
+  if (filtered.length === 0) {
     container.innerHTML = `
-      <div class="empty-state">
-        <h3 class="text-xl font-bold text-teal-950 mb-2">No fitness events match your filters</h3>
-        <p class="text-sm">Try tweaking your search or be the first to share a new listing!</p>
-        <button class="btn-primary mt-4" onclick="resetFilters()">Clear Filters</button>
+      <div class="text-center py-12 px-4 bg-white border-2 border-dashed border-stone-200 rounded-2xl">
+        <h3 class="text-xl font-bold text-teal-950 mb-2">No fitness events found for this filter</h3>
+        <p class="text-stone-500 text-sm">Try clearing your search or share a new listing in this category!</p>
+        <button class="btn-primary mt-4" onclick="resetFilters()">Reset All Filters</button>
       </div>`;
-    capNote.style.display = 'none';
     return;
   }
 
-  container.innerHTML = `<div class="listings">${capped.map((l, idx) => `
-    <article class="card">
-      <div class="flex justify-between items-center gap-2">
-        <span class="cat-badge">${escapeHtml(l.category)}</span>
-        <span class="text-xs font-bold text-emerald-800">${Number(l.cost) === 0 ? '🎉 FREE' : ''}</span>
-      </div>
-      <h3>${escapeHtml(l.title)}</h3>
-      <div class="meta">
-        <div class="meta-item">📍 ${escapeHtml(l.location)}</div>
-        <div class="meta-item">📅 ${formatDateTime(l.date_time)}</div>
-        <div class="meta-item">👤 Host: ${escapeHtml(l.name)}</div>
-      </div>
-      <div class="price-row">
-        <div>
-          <span class="price-tag">${formatCost(l.cost)}</span>
+  container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">${filtered.map((l, idx) => `
+    <article class="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div>
+        <div class="flex justify-between items-center gap-2 mb-3">
+          <span class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-teal-950 uppercase tracking-wider">${escapeHtml(l.category)}</span>
+          ${Number(l.cost) === 0 ? '<span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">🎉 FREE</span>' : ''}
         </div>
+        <h3 class="text-xl font-extrabold text-teal-950 leading-snug mb-3">${escapeHtml(l.title)}</h3>
+        <div class="text-xs text-stone-600 space-y-1.5 mb-4">
+          <div class="flex items-center gap-1.5">📍 ${escapeHtml(l.location)}</div>
+          <div class="flex items-center gap-1.5">📅 ${formatDateTime(l.date_time)}</div>
+          <div class="flex items-center gap-1.5">👤 Host: ${escapeHtml(l.name)}</div>
+        </div>
+      </div>
+      <div class="pt-3 border-t border-stone-100 flex justify-between items-center">
+        <span class="text-xl font-extrabold text-teal-950">${formatCost(l.cost)}</span>
         <div class="flex items-center gap-2">
-          <span class="age-badge">${escapeHtml(l.target_age)}</span>
+          <span class="text-xs font-bold text-coral-600 bg-rose-50 text-rose-700 px-2.5 py-1 rounded-md">${escapeHtml(l.target_age)}</span>
           <button class="btn-secondary" onclick="openModalByIndex(${idx})">View</button>
         </div>
       </div>
     </article>
   `).join('')}</div>`;
 
-  // Attach reference array for modal opening
-  window.currentCappedListings = capped;
-
-  if (total > MAX_VISIBLE) {
-    capNote.style.display = 'block';
-    capNote.textContent = `Showing first ${MAX_VISIBLE} of ${total} listings.`;
-  } else {
-    capNote.style.display = 'none';
-  }
+  window.currentCappedListings = filtered;
 }
 
 function openModalByIndex(idx) {
@@ -678,16 +832,12 @@ function copyShareLink() {
   const loc = document.getElementById('modalLoc').textContent;
   const shareText = `Check out this local fitness event: "${title}" on ${time} at ${loc}!`;
 
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(shareText);
-  } else {
-    const el = document.createElement('textarea');
-    el.value = shareText;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-  }
+  const el = document.createElement('textarea');
+  el.value = shareText;
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
   
   const copyBtn = document.querySelector('#detailsModal .btn-secondary');
   const orig = copyBtn.textContent;
@@ -714,12 +864,6 @@ async function handleFormSubmit(e) {
     return;
   }
 
-  if (Number(cost) < 0) {
-    msg.textContent = '⚠️ Cost cannot be negative.';
-    msg.className = 'text-sm font-semibold text-rose-600';
-    return;
-  }
-
   btn.disabled = true;
   msg.textContent = 'Sharing listing...';
   msg.className = 'text-sm font-semibold text-teal-800';
@@ -735,36 +879,20 @@ async function handleFormSubmit(e) {
     category
   };
 
-  let savedSuccessfully = false;
+  listings.unshift(newEntry);
 
   if (supabaseClient) {
     try {
-      const { data, error } = await supabaseClient
-        .from('fitness_listings')
-        .insert({
-          name,
-          title,
-          location,
-          date_time: new Date(dateTime).toISOString(),
-          cost: Number(cost),
-          target_age: age,
-          category
-        })
-        .select('*')
-        .single();
-
-      if (!error && data) {
-        listings.unshift(data);
-        savedSuccessfully = true;
-      }
+      await supabaseClient.from('fitness_listings').insert({
+        name, title, location,
+        date_time: new Date(dateTime).toISOString(),
+        cost: Number(cost),
+        target_age: age,
+        category
+      });
     } catch (err) {
-      console.warn('Supabase insert failed, storing locally:', err);
+      console.warn('Supabase insert fallback:', err);
     }
-  }
-
-  if (!savedSuccessfully) {
-    // Fallback directly to local in-memory state
-    listings.unshift(newEntry);
   }
 
   document.getElementById('addForm').reset();
@@ -779,7 +907,6 @@ async function handleFormSubmit(e) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Set default datetime picker to tomorrow at 10 AM
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(10, 0, 0, 0);
@@ -792,4 +919,4 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 </body>
-</html> 
+</html>
