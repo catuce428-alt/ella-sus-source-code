@@ -4,28 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Local Fitness Finder</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Karla:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
   :root {
-    --bg: #f5f8f4;
+    --bg: #f6f8f3;
     --surface: #ffffff;
-    --surface-2: #eaf1e7;
-    --ink: #10231d;
-    --muted: #53665c;
-    --line: #d8e2d5;
-    --teal: #144037;
-    --teal-dark: #0a2620;
-    --emerald-accent: #10b981;
-    --amber: #f59e0b;
-    --amber-dark: #d97706;
-    --coral: #ef4444;
-    --shadow: 0 16px 36px rgba(16, 35, 29, 0.08);
-    --radius: 20px;
+    --surface-2: #eef3e9;
+    --ink: #152420;
+    --muted: #5c6d64;
+    --line: #dbe4d6;
+    --teal: #1b4b43;
+    --teal-dark: #0f332d;
+    --amber: #ef9f2e;
+    --amber-dark: #c97f16;
+    --coral: #e0623f;
+    --shadow: 0 14px 34px rgba(21, 36, 32, .10);
+    --radius: 16px;
   }
   
   * { box-sizing: border-box; }
@@ -34,592 +33,486 @@
     margin: 0;
     background: var(--bg);
     color: var(--ink);
-    font-family: 'Karla', system-ui, -apple-system, sans-serif;
+    font-family: 'Karla', system-ui, sans-serif;
     line-height: 1.5;
   }
-  
-  h1, h2, h3, h4, h5 { font-family: 'Outfit', sans-serif; margin: 0; }
-  .wrap { width: min(100% - 32px, 1080px); margin: 0 auto; }
+  h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
 
-  /* Animated Blob Buttons */
+  /* Organic Blob Styling */
   .blob-btn {
-    position: relative;
-    padding: 24px 28px;
-    border-radius: 40px 18px 45px 22px;
-    background: linear-gradient(135deg, #1d5348 0%, #0f332d 100%);
-    color: #ffffff;
-    box-shadow: 0 12px 30px rgba(15, 51, 45, 0.25);
-    cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transition: all 0.4s ease-in-out;
+    box-shadow: 0 12px 28px rgba(27, 75, 67, 0.15);
   }
-
-  .blob-btn-alt {
-    border-radius: 22px 42px 20px 48px;
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: #0f332d;
-    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-  }
-
   .blob-btn:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(15, 51, 45, 0.35);
-    border-color: rgba(255, 255, 255, 0.4);
+    border-radius: 58% 42% 38% 62% / 52% 58% 42% 48%;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 18px 36px rgba(27, 75, 67, 0.25);
   }
-  
-  .blob-btn-alt:hover {
-    box-shadow: 0 20px 40px rgba(245, 158, 11, 0.45);
+  .blob-btn-2 {
+    border-radius: 65% 35% 48% 52% / 38% 55% 45% 62%;
+    transition: all 0.4s ease-in-out;
+    box-shadow: 0 12px 28px rgba(239, 159, 46, 0.2);
+  }
+  .blob-btn-2:hover {
+    border-radius: 40% 60% 60% 40% / 55% 35% 65% 45%;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 18px 36px rgba(239, 159, 46, 0.35);
   }
 
-  /* Pulse Mottos Tag */
-  .motto-badge {
-    animation: pulseGlow 3s infinite alternate ease-in-out;
-  }
+  /* Badge Pulse */
   @keyframes pulseGlow {
-    0% { transform: scale(1); opacity: 0.95; }
-    100% { transform: scale(1.03); opacity: 1; }
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+  }
+  .vibe-badge {
+    animation: pulseGlow 4s infinite ease-in-out;
   }
 
-  /* Category Column Cards */
-  .category-card {
-    background: var(--surface);
-    border: 2px solid var(--line);
-    border-radius: 18px;
-    padding: 18px 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-  .category-card:hover {
-    border-color: var(--teal);
-    background: var(--surface-2);
-    transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(20, 64, 55, 0.12);
-  }
-  .category-card.selected {
-    border-color: var(--teal);
-    background: var(--teal);
-    color: #fff;
-  }
-  .category-card.selected p {
-    color: #d1fae5;
-  }
-
-  /* Custom tabs & buttons */
-  .tabs { display: flex; gap: 10px; }
-  .tab {
-    border: 1.5px solid rgba(255,255,255,.3);
-    background: rgba(255,255,255,.08);
-    color: #fff;
-    padding: 10px 22px;
-    border-radius: 999px;
+  .tabs-nav .tab-btn.active {
+    background-color: #ffffff;
+    color: #0f332d;
     font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all .2s ease;
   }
-  .tab:hover { border-color: #fff; background: rgba(255,255,255,.2); }
-  .tab.active { background: #fff; color: var(--teal-dark); border-color: #fff; }
-
-  .view { display: none; }
-  .view.active { display: block; animation: fadeIn 0.3s ease-out; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .btn-primary {
-    background: var(--amber);
-    color: var(--teal-dark);
-    border: none;
-    padding: 12px 26px;
-    border-radius: 999px;
-    font-weight: 800;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all .2s ease;
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
-  }
-  .btn-primary:hover { background: var(--amber-dark); color: #fff; transform: translateY(-1px); }
-
-  .btn-secondary {
-    background: var(--surface-2);
-    color: var(--teal-dark);
-    border: 1px solid var(--line);
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background 0.15s ease;
-  }
-  .btn-secondary:hover { background: #d7e5d3; }
-
-  /* Modal styling */
-  .modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 38, 32, 0.7);
-    backdrop-filter: blur(6px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s ease;
-  }
-  .modal-backdrop.open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .modal-box {
-    background: var(--surface);
-    border-radius: 24px;
-    width: min(100%, 560px);
-    padding: 30px;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-    transform: scale(0.92);
-    transition: transform 0.25s ease;
-  }
-  .modal-backdrop.open .modal-box { transform: scale(1); }
 </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col justify-between">
 
-<header class="bg-gradient-to-br from-teal-950 via-teal-900 to-emerald-950 text-white pt-8 pb-12 shadow-xl border-b border-teal-800/40">
-  <div class="wrap flex flex-col gap-6">
-    
-    <!-- Top Bar Navigation -->
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">⚡</span>
-        <span id="statusBadge" class="text-xs font-extrabold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 px-3 py-1 rounded-full uppercase tracking-wider">
-          Ready & Live
+<div>
+  <!-- TOP HEADER -->
+  <header class="bg-[#1b4b43] text-white pt-8 pb-10 px-4">
+    <div class="max-w-5xl mx-auto space-y-6">
+      
+      <!-- Mottos Ticker Badges -->
+      <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+        <span class="vibe-badge bg-[#ef9f2e] text-[#0f332d] px-3 py-1 rounded-full shadow">
+          🔥 Sweat, Smile, Repeat!
         </span>
-      </div>
-      <div class="tabs">
-        <button class="tab active" id="tabLook" onclick="showView('look')">
-          🔍 Discover Fitness
-        </button>
-        <button class="tab" id="tabAdd" onclick="showView('add')">
-          ➕ Share a Listing
-        </button>
-      </div>
-    </div>
-
-    <!-- Hero Banner with Welcome Sign & Good Vibes Mottos -->
-    <div class="text-center md:text-left py-6 px-6 md:px-10 rounded-3xl bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl relative overflow-hidden">
-      <div class="absolute -right-10 -top-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
-      <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-      <!-- Welcome Sign Badge -->
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 font-bold text-xs md:text-sm uppercase tracking-widest mb-3 motto-badge">
-        <span>🔥 Welcome Sign</span>
-      </div>
-
-      <!-- Big Welcome Title -->
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-        WELCOME TO YOUR <br class="hidden sm:inline"/>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-emerald-300">LOCAL FITNESS FINDER</span>
-      </h1>
-
-      <!-- Sports Mottos & Good Vibes Text -->
-      <p class="text-emerald-100 text-base md:text-lg mt-3 max-w-2xl font-medium leading-relaxed">
-        "Sweat today, smile tomorrow." — Your ultimate community hub for classes, local run clubs, high-energy coaching, and neighborhood games!
-      </p>
-
-      <!-- Good Vibes Banner Pills -->
-      <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 mt-5">
-        <span class="bg-emerald-800/60 border border-emerald-600/40 text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-full">
-          ✨ Good Vibes Only
-        </span>
-        <span class="bg-emerald-800/60 border border-emerald-600/40 text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-full">
+        <span class="vibe-badge bg-emerald-700 text-white px-3 py-1 rounded-full shadow">
           💪 Move Together, Grow Together
         </span>
-        <span class="bg-amber-500/20 border border-amber-400/40 text-amber-200 text-xs font-bold px-3 py-1.5 rounded-full">
-          🏆 No Excuses, Just Energy!
+        <span class="vibe-badge bg-teal-800 text-emerald-200 px-3 py-1 rounded-full shadow">
+          ⚡ No Excuses, Only Energy
         </span>
       </div>
-    </div>
 
-    <!-- Two Interactive Clickable Blobs -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
-      <!-- Blob 1: About Us -->
-      <div class="blob-btn" onclick="openAboutModal()">
-        <div class="flex flex-col gap-1">
-          <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-300">Discover Our Vibe</span>
-          <h3 class="text-2xl font-black text-white">About Us 🌟</h3>
-          <p class="text-xs text-emerald-100/80 font-medium">Learn about our mission to bring local fitness lovers together.</p>
+      <!-- Welcome Sign & Title -->
+      <div class="space-y-2">
+        <div class="inline-block bg-emerald-900/60 border border-emerald-400/30 px-3 py-1 rounded-lg text-emerald-300 text-xs tracking-wider uppercase font-bold">
+          Welcome To Your
         </div>
-        <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl shrink-0 border border-white/20">
-          ➔
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">
+          Local Fitness Finder 🏃‍♀️
+        </h1>
+        <p class="text-emerald-100/80 text-base md:text-lg max-w-2xl">
+          Discover workouts, classes, leagues, and coaches right in your neighborhood — or share your own activity with the community!
+        </p>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="tabs-nav flex gap-3 pt-2">
+        <button id="tabLook" onclick="showView('look')" class="tab-btn active px-5 py-2.5 rounded-full border border-white/30 text-sm font-semibold transition">
+          <i class="fa-solid fa-compass mr-1.5"></i> Find Fitness
+        </button>
+        <button id="tabAdd" onclick="showView('add')" class="tab-btn px-5 py-2.5 rounded-full border border-white/30 text-sm font-semibold transition hover:border-white">
+          <i class="fa-solid fa-circle-plus mr-1.5"></i> Share a Listing
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-10">
+
+    <!-- TWO INTERACTIVE BLOBS SECTION -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+      
+      <!-- Blob 1: About Us -->
+      <div onclick="openAboutModal()" class="blob-btn bg-gradient-to-br from-[#1b4b43] to-[#0f332d] text-white p-8 cursor-pointer flex flex-col justify-between min-h-[190px]">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase font-extrabold text-[#ef9f2e] tracking-wider">Who We Are</span>
+            <i class="fa-solid fa-heart-pulse text-2xl text-[#ef9f2e]"></i>
+          </div>
+          <h2 class="text-2xl font-bold">About Us</h2>
+          <p class="text-xs text-emerald-100/80 leading-relaxed">
+            Connecting neighbors through positive movement, inclusive sports, and active lifestyles. Click to learn our mission!
+          </p>
+        </div>
+        <div class="text-xs font-bold text-[#ef9f2e] flex items-center gap-1 mt-4">
+          Read Our Story <i class="fa-solid fa-arrow-right text-xs"></i>
         </div>
       </div>
 
       <!-- Blob 2: Find Fitness Near Me -->
-      <div class="blob-btn blob-btn-alt" onclick="scrollToDiscovery()">
-        <div class="flex flex-col gap-1">
-          <span class="text-xs font-extrabold uppercase tracking-widest text-teal-950">Instant Search</span>
-          <h3 class="text-2xl font-black text-teal-950">Find Fitness Near Me 📍</h3>
-          <p class="text-xs text-teal-900/80 font-medium">Explore gyms, races, trainers, and classes in your area.</p>
+      <div onclick="scrollToCategories()" class="blob-btn-2 bg-gradient-to-br from-[#ef9f2e] to-[#c97f16] text-[#0f332d] p-8 cursor-pointer flex flex-col justify-between min-h-[190px]">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase font-extrabold text-teal-950 tracking-wider">Quick Jump</span>
+            <i class="fa-solid fa-location-dot text-2xl text-teal-950"></i>
+          </div>
+          <h2 class="text-2xl font-bold">Find Fitness Near Me</h2>
+          <p class="text-xs text-teal-950/80 leading-relaxed">
+            Browse activities across 6 distinct categories happening right now in your local area.
+          </p>
         </div>
-        <div class="w-12 h-12 rounded-full bg-teal-950/10 flex items-center justify-center text-xl shrink-0 border border-teal-950/20">
-          👇
+        <div class="text-xs font-bold text-teal-950 flex items-center gap-1 mt-4">
+          Explore Categories Below <i class="fa-solid fa-arrow-down text-xs"></i>
         </div>
       </div>
-    </div>
 
-  </div>
-</header>
+    </section>
 
-<main class="wrap my-10 flex-1">
-
-  <!-- LOOKING / DISCOVERY VIEW -->
-  <section class="view active" id="viewLook">
-    
-    <!-- CATEGORIES COLUMNS GRID SECTION (Target of "Find Fitness Near Me" Blob) -->
-    <div id="discoverySection" class="mb-10 scroll-mt-6">
-      <div class="flex flex-wrap justify-between items-end gap-3 mb-5">
-        <div>
-          <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wider">Explore By Category</span>
-          <h2 class="text-2xl md:text-3xl font-black text-teal-950">Find Fitness Near Me</h2>
-        </div>
-        <button class="text-xs font-bold text-teal-800 hover:underline bg-emerald-100/60 px-3 py-1.5 rounded-lg" onclick="resetCategoryFilter()">
-          Show All Categories
-        </button>
+    <!-- CATEGORIES COLUMNS GRID -->
+    <section id="categoriesSection" class="space-y-4 pt-2">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-[#152420]">
+          <i class="fa-solid fa-layer-group text-[#1b4b43] mr-2"></i>Explore Categories
+        </h2>
+        <span class="text-xs text-stone-500">Click any column to filter</span>
       </div>
 
-      <!-- 6 Category Columns Grid -->
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         
-        <!-- Column 1: Gyms -->
-        <div class="category-card" id="catCard-Gyms" onclick="selectCategoryCard('Gyms')">
-          <span class="text-3xl mb-1">🏋️‍♂️</span>
-          <h4 class="font-extrabold text-sm">Gyms</h4>
-          <p class="text-xs text-stone-500 font-semibold">4 Local Hubs</p>
-        </div>
+        <!-- Category 1: Gyms -->
+        <button onclick="selectCategory('Gyms')" class="bg-white hover:bg-emerald-50 border border-stone-200 hover:border-emerald-500 p-4 rounded-xl text-center space-y-2 transition group shadow-sm">
+          <div class="w-10 h-10 mx-auto rounded-full bg-emerald-100 text-[#1b4b43] flex items-center justify-center text-lg group-hover:scale-110 transition">
+            <i class="fa-solid fa-dumbbell"></i>
+          </div>
+          <div class="font-bold text-xs text-stone-800 group-hover:text-emerald-800">Gyms</div>
+        </button>
 
-        <!-- Column 2: Classes -->
-        <div class="category-card" id="catCard-Classes" onclick="selectCategoryCard('Classes')">
-          <span class="text-3xl mb-1">🧘‍♀️</span>
-          <h4 class="font-extrabold text-sm">Classes</h4>
-          <p class="text-xs text-stone-500 font-semibold">Yoga & HIIT</p>
-        </div>
+        <!-- Category 2: Classes -->
+        <button onclick="selectCategory('Classes')" class="bg-white hover:bg-emerald-50 border border-stone-200 hover:border-emerald-500 p-4 rounded-xl text-center space-y-2 transition group shadow-sm">
+          <div class="w-10 h-10 mx-auto rounded-full bg-amber-100 text-[#c97f16] flex items-center justify-center text-lg group-hover:scale-110 transition">
+            <i class="fa-solid fa-[#1b4b43] fa-person-dots-from-line"></i>
+          </div>
+          <div class="font-bold text-xs text-stone-800 group-hover:text-emerald-800">Classes</div>
+        </button>
 
-        <!-- Column 3: Marathons & Races -->
-        <div class="category-card" id="catCard-Races" onclick="selectCategoryCard('Marathons & Races')">
-          <span class="text-3xl mb-1">🏃‍♂️</span>
-          <h4 class="font-extrabold text-sm">Races</h4>
-          <p class="text-xs text-stone-500 font-semibold">5K to 10K</p>
-        </div>
+        <!-- Category 3: Marathons & Races -->
+        <button onclick="selectCategory('Marathons and races')" class="bg-white hover:bg-emerald-50 border border-stone-200 hover:border-emerald-500 p-4 rounded-xl text-center space-y-2 transition group shadow-sm">
+          <div class="w-10 h-10 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-lg group-hover:scale-110 transition">
+            <i class="fa-solid fa-person-running"></i>
+          </div>
+          <div class="font-bold text-xs text-stone-800 group-hover:text-emerald-800">Marathons & Races</div>
+        </button>
 
-        <!-- Column 4: Coaches / Trainers -->
-        <div class="category-card" id="catCard-Coaches" onclick="selectCategoryCard('Coaches/Trainers')">
-          <span class="text-3xl mb-1">👟</span>
-          <h4 class="font-extrabold text-sm">Trainers</h4>
-          <p class="text-xs text-stone-500 font-semibold">1-on-1 Coaching</p>
-        </div>
+        <!-- Category 4: Coaches / Trainers -->
+        <button onclick="selectCategory('Coaches/Trainers')" class="bg-white hover:bg-emerald-50 border border-stone-200 hover:border-emerald-500 p-4 rounded-xl text-center space-y-2 transition group shadow-sm">
+          <div class="w-10 h-10 mx-auto rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg group-hover:scale-110 transition">
+            <i class="fa-solid fa-user-ninja"></i>
+          </div>
+          <div class="font-bold text-xs text-stone-800 group-hover:text-emerald-800">Coaches / Trainers</div>
+        </button>
 
-        <!-- Column 5: Recreational Groups -->
-        <div class="category-card" id="catCard-Rec" onclick="selectCategoryCard('Recreational Groups')">
-          <span class="text-3xl mb-1">🤝</span>
-          <h4 class="font-extrabold text-sm">Rec Groups</h4>
-          <p class="text-xs text-stone-500 font-semibold">Social Runs & Play</p>
-        </div>
+        <!-- Category 5: Recreational Groups -->
+        <button onclick="selectCategory('Recreational Groups')" class="bg-white hover:bg-emerald-50 border border-stone-200 hover:border-emerald-500 p-4 rounded-xl text-center space-y-2 transition group shadow-sm">
+          <div class="w-10 h-10 mx-auto rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-lg group-hover:scale-110 transition">
+            <i class="fa-solid fa-people-group"></i>
+          </div>
+          <div class="font-bold text-xs text-stone-800 group-hover:text-emerald-800">Rec Groups</div>
+        </button>
 
-        <!-- Column 6: Competitive Leagues -->
-        <div class="category-card" id="catCard-Leagues" onclick="selectCategoryCard('Competitive Leagues/Teams')">
-          <span class="text-3xl mb-1">🏆</span>
-          <h4 class="font-extrabold text-sm">Leagues</h4>
-          <p class="text-xs text-stone-500 font-semibold">Teams & Tourneys</p>
-        </div>
+        <!-- Category 6: Competitive Leagues -->
+        <button onclick="selectCategory('Competitive Leagues/teams')" class="bg-white hover:bg-emerald-50 border border-stone-200 hover:border-emerald-500 p-4 rounded-xl text-center space-y-2 transition group shadow-sm">
+          <div class="w-10 h-10 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-lg group-hover:scale-110 transition">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <div class="font-bold text-xs text-stone-800 group-hover:text-emerald-800">Competitive Leagues</div>
+        </button>
 
       </div>
-    </div>
+    </section>
 
-    <!-- Filter and Search Toolbar -->
-    <div class="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm mb-6 flex flex-wrap gap-4 items-end">
-      <div class="flex-1 min-w-[200px]">
-        <label for="searchQuery" class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Search Keyword</label>
-        <input type="text" id="searchQuery" class="w-full border-1.5 border-stone-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-700" placeholder="Search title, location, instructor..." oninput="renderListings()">
-      </div>
+    <!-- VIEW 1: FIND FITNESS LISTINGS -->
+    <section id="viewLook" class="space-y-6">
       
-      <div>
-        <label for="filterAge" class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Age Target</label>
-        <select id="filterAge" class="border-1.5 border-stone-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-700 bg-white min-w-[150px]" onchange="renderListings()">
-          <option value="">Any Age Group</option>
-          <option>Teens under 14</option>
-          <option>Teens 14-17</option>
-          <option>Adults 18+</option>
-          <option>All Ages</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="sortPrice" class="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1">Sort By</label>
-        <select id="sortPrice" class="border-1.5 border-stone-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-teal-700 bg-white min-w-[150px]" onchange="renderListings()">
-          <option value="featured">Soonest First</option>
-          <option value="low">Price: Low to High</option>
-          <option value="high">Price: High to Low</option>
-        </select>
-      </div>
-
-      <div class="flex items-center gap-2 py-2">
-        <input type="checkbox" id="freeOnly" class="w-4 h-4 accent-teal-800 cursor-pointer" onchange="renderListings()">
-        <label for="freeOnly" class="text-xs font-bold text-stone-700 cursor-pointer uppercase tracking-wider">Free Only</label>
-      </div>
-    </div>
-
-    <!-- Live Counter and Feed -->
-    <div class="flex justify-between items-center mb-4 px-1">
-      <span class="text-sm font-extrabold text-teal-950" id="resultCount">Loading listings...</span>
-      <button class="text-xs font-bold text-teal-800 hover:underline" onclick="resetFilters()">Clear Filters</button>
-    </div>
-
-    <div id="listingsContainer"></div>
-  </section>
-
-  <!-- ADDING VIEW -->
-  <section class="view" id="viewAdd">
-    <div class="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-md max-w-2xl mx-auto">
-      <div class="border-b border-stone-100 pb-4 mb-6">
-        <h2 class="text-2xl font-bold text-teal-950">Share a Fitness Listing</h2>
-        <p class="text-stone-500 text-sm mt-1">Post your gym, class, race, group, or training session to the community.</p>
-      </div>
-
-      <form id="addForm" novalidate onsubmit="handleFormSubmit(event)">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label for="fName" class="block text-xs font-bold text-stone-500 uppercase mb-1">Your Name / Host</label>
-            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="text" id="fName" maxlength="100" placeholder="e.g. Coach Alex" required>
+      <!-- Toolbar Filters -->
+      <div class="bg-white border border-stone-200 rounded-2xl p-4 md:p-6 shadow-sm space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Search Box -->
+          <div class="flex flex-col gap-1">
+            <label for="searchInput" class="text-xs font-bold text-stone-500">Search Keywords</label>
+            <input type="text" id="searchInput" oninput="renderListings()" placeholder="e.g. Park, Yoga, League..." class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
           </div>
-          <div>
-            <label for="fTitle" class="block text-xs font-bold text-stone-500 uppercase mb-1">Activity / Listing Title</label>
-            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="text" id="fTitle" maxlength="150" placeholder="e.g. Sunset Pilates on the Lawn" required>
-          </div>
-          <div class="md:col-span-2">
-            <label for="fLocation" class="block text-xs font-bold text-stone-500 uppercase mb-1">Neighborhood or Location</label>
-            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="text" id="fLocation" maxlength="200" placeholder="e.g. Waterfront Park, Central Lawn" required>
-          </div>
-          <div>
-            <label for="fDateTime" class="block text-xs font-bold text-stone-500 uppercase mb-1">Date & Time</label>
-            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="datetime-local" id="fDateTime" required>
-          </div>
-          <div>
-            <label for="fCost" class="block text-xs font-bold text-stone-500 uppercase mb-1">Cost ($ USD, enter 0 for free)</label>
-            <input class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm" type="number" id="fCost" min="0" step="0.01" placeholder="0.00" required>
-          </div>
-          <div>
-            <label for="fAge" class="block text-xs font-bold text-stone-500 uppercase mb-1">Target Age Group</label>
-            <select id="fAge" class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm bg-white" required>
-              <option value="" disabled selected>Select age target...</option>
-              <option>Teens under 14</option>
-              <option>Teens 14-17</option>
-              <option>Adults 18+</option>
-              <option>All Ages</option>
+
+          <!-- Category Filter -->
+          <div class="flex flex-col gap-1">
+            <label for="filterCategory" class="text-xs font-bold text-stone-500">Category</label>
+            <select id="filterCategory" onchange="renderListings()" class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+              <option value="">All Categories</option>
+              <option value="Gyms">Gyms</option>
+              <option value="Classes">Classes</option>
+              <option value="Marathons and races">Marathons and races</option>
+              <option value="Coaches/Trainers">Coaches / Trainers</option>
+              <option value="Recreational Groups">Recreational Groups</option>
+              <option value="Competitive Leagues/teams">Competitive Leagues / teams</option>
             </select>
           </div>
-          <div>
-            <label for="fCategory" class="block text-xs font-bold text-stone-500 uppercase mb-1">Category Column</label>
-            <select id="fCategory" class="w-full border border-stone-300 rounded-xl px-3.5 py-2 text-sm bg-white" required>
-              <option value="" disabled selected>Select category...</option>
-              <option>Gyms</option>
-              <option>Classes</option>
-              <option>Marathons & Races</option>
-              <option>Coaches/Trainers</option>
-              <option>Recreational Groups</option>
-              <option>Competitive Leagues/Teams</option>
+
+          <!-- Age Filter -->
+          <div class="flex flex-col gap-1">
+            <label for="filterAge" class="text-xs font-bold text-stone-500">Age Group</label>
+            <select id="filterAge" onchange="renderListings()" class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+              <option value="">Any Age Group</option>
+              <option value="Teens under 14">Teens under 14</option>
+              <option value="Teens & All Ages">Teens & All Ages</option>
+              <option value="Adults 18+">Adults 18+</option>
             </select>
           </div>
+
+          <!-- Price Sort -->
+          <div class="flex flex-col gap-1">
+            <label for="sortPrice" class="text-xs font-bold text-stone-500">Sort By Price</label>
+            <select id="sortPrice" onchange="renderListings()" class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+              <option value="">Default Featured</option>
+              <option value="low">Price: Low to High</option>
+              <option value="high">Price: High to Low</option>
+            </select>
+          </div>
+
         </div>
 
-        <div class="mt-6 flex flex-wrap items-center gap-4">
-          <button type="submit" id="btnSubmit" class="btn-primary">
-            🚀 Share Listing
-          </button>
-          <span class="text-sm font-semibold" id="formMsg"></span>
+        <div class="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500">
+          <span id="resultCount" class="font-bold text-emerald-800">Loading listings...</span>
+          <button onclick="resetFilters()" class="text-stone-400 hover:text-stone-600 underline">Reset Filters</button>
         </div>
-      </form>
-    </div>
-  </section>
+      </div>
 
-</main>
+      <!-- Listings Grid Container -->
+      <div id="listingsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Cards will render dynamically here -->
+      </div>
+
+    </section>
+
+    <!-- VIEW 2: SHARE A LISTING FORM -->
+    <section id="viewAdd" class="hidden max-w-xl mx-auto">
+      <div class="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+        <div>
+          <h2 class="text-2xl font-bold text-stone-900">Share a Fitness Listing</h2>
+          <p class="text-xs text-stone-500 mt-1">
+            Help neighbors stay active by posting your event, class, or team lookup.
+          </p>
+        </div>
+
+        <form id="addForm" class="space-y-4" novalidate>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div class="flex flex-col gap-1">
+              <label for="fName" class="text-xs font-bold text-stone-600">Your Name *</label>
+              <input type="text" id="fName" required placeholder="Coach Sarah" class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="fTitle" class="text-xs font-bold text-stone-600">Event / Class Title *</label>
+              <input type="text" id="fTitle" required placeholder="Sunrise Yoga in Park" class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+            </div>
+
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="fLocation" class="text-xs font-bold text-stone-600">Location / Neighborhood *</label>
+            <input type="text" id="fLocation" required placeholder="Central Park, North Field" class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div class="flex flex-col gap-1">
+              <label for="fDateTime" class="text-xs font-bold text-stone-600">Date & Time *</label>
+              <input type="datetime-local" id="fDateTime" required class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="fCost" class="text-xs font-bold text-stone-600">Cost ($ USD, 0 = Free) *</label>
+              <input type="number" id="fCost" min="0" step="0.01" required placeholder="0.00" class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+            </div>
+
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <div class="flex flex-col gap-1">
+              <label for="fAge" class="text-xs font-bold text-stone-600">Target Age Group *</label>
+              <select id="fAge" required class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                <option value="" disabled selected>Select age range</option>
+                <option value="Teens under 14">Teens under 14</option>
+                <option value="Teens & All Ages">Teens & All Ages</option>
+                <option value="Adults 18+">Adults 18+</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label for="fCategory" class="text-xs font-bold text-stone-600">Category *</label>
+              <select id="fCategory" required class="border border-stone-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                <option value="" disabled selected>Select category</option>
+                <option value="Gyms">Gyms</option>
+                <option value="Classes">Classes</option>
+                <option value="Marathons and races">Marathons and races</option>
+                <option value="Coaches/Trainers">Coaches / Trainers</option>
+                <option value="Recreational Groups">Recreational Groups</option>
+                <option value="Competitive Leagues/teams">Competitive Leagues / teams</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" id="submitBtn" class="w-full bg-[#ef9f2e] hover:bg-[#c97f16] text-[#0f332d] font-bold py-3 px-6 rounded-full transition shadow-md">
+              Publish Listing
+            </button>
+          </div>
+
+          <div id="formMsg" class="text-center text-xs font-bold py-2"></div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+</div>
 
 <!-- ABOUT US MODAL -->
-<div id="aboutModal" class="modal-backdrop" onclick="closeAboutModalOnBackdrop(event)">
-  <div class="modal-box">
-    <div class="flex justify-between items-start gap-3 pb-3 border-b border-stone-100">
+<div id="aboutModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+    <button onclick="closeAboutModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+      <i class="fa-solid fa-xmark text-xl"></i>
+    </button>
+
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-full bg-[#1b4b43] text-[#ef9f2e] flex items-center justify-center text-xl font-bold">
+        <i class="fa-solid fa-[#ef9f2e] fa-heart-pulse"></i>
+      </div>
       <div>
-        <span class="text-xs font-extrabold px-3 py-1 rounded-full bg-amber-100 text-amber-900 uppercase tracking-wider">🌟 Community First</span>
-        <h3 class="text-2xl font-black text-teal-950 mt-2">About Local Fitness Finder</h3>
-      </div>
-      <button onclick="closeAboutModal()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold px-2">&times;</button>
-    </div>
-
-    <div class="py-4 space-y-3 text-stone-700 text-sm leading-relaxed">
-      <p>
-        <strong>Local Fitness Finder</strong> was built with a simple mission: to make staying active fun, inclusive, and effortlessly accessible for everyone in our community!
-      </p>
-      <p>
-        Whether you are looking for an early morning yoga session, a personal trainer to hit your personal best, an adult recreational soccer team, or a competitive marathon, we connect local fitness hosts with energetic people like you.
-      </p>
-      <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-teal-950 font-semibold space-y-1">
-        <div>✨ <strong>100% Community Driven:</strong> Anyone can post a listing or group.</div>
-        <div>💪 <strong>Zero Hidden Fees:</strong> Free to search and join open activities.</div>
-        <div>🏆 <strong>Good Vibes Guaranteed:</strong> All fitness levels welcomed with open arms!</div>
+        <h3 class="text-xl font-bold text-stone-900">About Local Fitness Finder</h3>
+        <p class="text-xs text-stone-500">Building healthier, happier communities together.</p>
       </div>
     </div>
 
-    <div class="pt-4 border-t border-stone-100 flex justify-end">
-      <button class="btn-primary" onclick="closeAboutModal()">Got It!</button>
+    <div class="space-y-3 text-xs text-stone-600 leading-relaxed border-t border-b border-stone-100 py-3">
+      <p>
+        <strong>Local Fitness Finder</strong> was created to help everyone — from teens picking up a new sport to adults looking for neighborhood running groups — connect with active opportunities nearby.
+      </p>
+      <p>
+        Whether you are looking for free community yoga, personal training, pickup games, or competitive league play, our mission is to make active living accessible and welcoming for everyone.
+      </p>
+      <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-emerald-900 font-semibold">
+        ✨ "Movement is medicine. Good sports vibes start right in your local park!"
+      </div>
+    </div>
+
+    <div class="text-right">
+      <button onclick="closeAboutModal()" class="bg-[#1b4b43] text-white px-5 py-2 rounded-full text-xs font-bold hover:bg-[#0f332d] transition">
+        Got It, Let's Move!
+      </button>
     </div>
   </div>
 </div>
 
-<!-- DETAILS MODAL -->
-<div id="detailsModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
-  <div class="modal-box">
-    <div class="flex justify-between items-start gap-3 pb-3 border-b border-stone-100">
-      <div>
-        <span id="modalCat" class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-teal-900 uppercase">Category</span>
-        <h3 id="modalTitle" class="text-2xl font-black text-teal-950 mt-2">Activity Title</h3>
-      </div>
-      <button onclick="closeModal()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold px-2">&times;</button>
-    </div>
-
-    <div class="py-4 space-y-3 text-stone-700 text-sm">
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-28">Location:</span>
-        <span id="modalLoc" class="font-medium">Neighborhood</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-28">Date & Time:</span>
-        <span id="modalTime" class="font-medium">Time</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-28">Host / Name:</span>
-        <span id="modalHost" class="font-medium">Host</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-28">Age Target:</span>
-        <span id="modalAge" class="font-medium">Age</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-teal-900 w-28">Cost:</span>
-        <span id="modalCost" class="font-bold text-emerald-700 text-base">$0.00</span>
-      </div>
-    </div>
-
-    <div class="pt-4 border-t border-stone-100 flex justify-between items-center gap-3">
-      <button class="btn-secondary" onclick="copyShareLink()">📋 Copy Details</button>
-      <button class="btn-primary" onclick="closeModal()">Close</button>
-    </div>
-  </div>
-</div>
-
+<!-- FOOTER -->
 <footer class="text-center py-8 border-t border-stone-200 text-stone-500 text-xs">
   Local Fitness Finder — Powered by community events &amp; good sports vibes.
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// Sample multi-category listings so app works instantly out-of-the-box
+/* =====================================================================
+   SUPABASE PUBLIC CONFIGURATION
+   ===================================================================== */
+window.FITNESS_CONFIG = {
+  SUPABASE_URL: "https://sayvdhthkbuwcbzlnmnz.supabase.co",
+  SUPABASE_KEY: "sb_publishable_bmZF5fAuoWyvAyKjVAU3Lw_WIkJ5jil"
+};
+
+let listings = [];
+let supabaseClient = null;
+
+// Fallback sample data in case table is empty or loading
 const SAMPLE_LISTINGS = [
   {
     id: "sample-1",
-    title: "Sunrise Community Yoga",
-    category: "Classes",
-    location: "Greenbelt Park Lawn",
+    name: "Coach Alex",
+    title: "Downtown Gym Pass & Tour",
+    location: "PowerPulse Gym, Main St",
     date_time: new Date(Date.now() + 86400000).toISOString(),
-    name: "Elena Rostova",
     cost: 0,
-    target_age: "All Ages"
+    target_age: "Adults 18+",
+    category: "Gyms"
   },
   {
     id: "sample-2",
-    title: "Metro Power Fitness & Weight Room Pass",
-    category: "Gyms",
-    location: "Downtown Fitness Hub",
-    date_time: new Date(Date.now() + 100000000).toISOString(),
-    name: "Metro Power Gym",
-    cost: 12,
-    target_age: "Adults 18+"
+    name: "Elena R.",
+    title: "Sunrise Yoga in the Park",
+    location: "Community Park Lawn",
+    date_time: new Date(Date.now() + 172800000).toISOString(),
+    cost: 5,
+    target_age: "Teens & All Ages",
+    category: "Classes"
   },
   {
     id: "sample-3",
-    title: "Weekly 5K Social Trail Run",
-    category: "Recreational Groups",
-    location: "Pine Hill Trailhead",
-    date_time: new Date(Date.now() + 172800000).toISOString(),
-    name: "Marcus Vance",
-    cost: 0,
-    target_age: "Adults 18+"
+    name: "Metro Athletics",
+    title: "Annual Community 5K & 10K",
+    location: "Riverside Park Trail",
+    date_time: new Date(Date.now() + 259200000).toISOString(),
+    cost: 15,
+    target_age: "Teens & All Ages",
+    category: "Marathons and races"
   },
   {
     id: "sample-4",
-    title: "1-on-1 Personalized Strength Coaching",
-    category: "Coaches/Trainers",
-    location: "Apex Athletic Center",
-    date_time: new Date(Date.now() + 200000000).toISOString(),
-    name: "Coach David",
-    cost: 40,
-    target_age: "All Ages"
+    name: "Coach Marcus",
+    title: "1-on-1 Youth Basketball Drills",
+    location: "Westside Community Center",
+    date_time: new Date(Date.now() + 345600000).toISOString(),
+    cost: 25,
+    target_age: "Teens under 14",
+    category: "Coaches/Trainers"
   },
   {
     id: "sample-5",
-    title: "3v3 Summer Hoops Tournament",
-    category: "Competitive Leagues/Teams",
-    location: "Downtown Outdoor Courts",
-    date_time: new Date(Date.now() + 345600000).toISOString(),
-    name: "Metro Rec Club",
-    cost: 25,
-    target_age: "Teens 14-17"
+    name: "Sam & Friends",
+    title: "Weekly Trail Running Club",
+    location: "Pine Hill Trailhead",
+    date_time: new Date(Date.now() + 432000000).toISOString(),
+    cost: 0,
+    target_age: "Adults 18+",
+    category: "Recreational Groups"
   },
   {
     id: "sample-6",
-    title: "Autumn Harbor 10K & Fun Run",
-    category: "Marathons & Races",
-    location: "Harbor Boardwalk Plaza",
+    name: "Metro League",
+    title: "3v3 Volleyball Tournament",
+    location: "Beachside Nets",
     date_time: new Date(Date.now() + 518400000).toISOString(),
-    name: "City Striders",
-    cost: 30,
-    target_age: "All Ages"
+    cost: 10,
+    target_age: "Teens & All Ages",
+    category: "Competitive Leagues/teams"
   }
 ];
 
-let listings = [];
-let selectedCategoryFilter = "";
-let supabaseClient = null;
-
-function initBackend() {
-  const badge = document.getElementById('statusBadge');
+/* Initialize Supabase connection safely */
+function initSupabase() {
   try {
     const cfg = window.FITNESS_CONFIG || {};
     if (cfg.SUPABASE_URL && cfg.SUPABASE_KEY && window.supabase) {
       supabaseClient = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_KEY);
-      badge.textContent = "🟢 Live Database";
-    } else {
-      throw new Error("No external Supabase config found");
     }
   } catch (err) {
-    supabaseClient = null;
-    badge.textContent = "⚡ Local Ready Mode";
+    console.warn("Supabase init fallback:", err);
   }
 }
 
+/* Load listings from Supabase or fallback */
 async function loadListings() {
+  const container = document.getElementById('listingsContainer');
+  container.innerHTML = `
+    <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-stone-200">
+      <i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-700 mb-2"></i>
+      <p class="text-sm font-bold text-stone-600">Loading fitness listings...</p>
+    </div>`;
+
   if (supabaseClient) {
     try {
       const { data, error } = await supabaseClient
@@ -627,104 +520,152 @@ async function loadListings() {
         .select('*')
         .order('date_time', { ascending: true });
 
-      if (error) throw error;
-      listings = Array.isArray(data) && data.length > 0 ? data : [...SAMPLE_LISTINGS];
-    } catch (error) {
-      listings = [...SAMPLE_LISTINGS];
+      if (!error && Array.isArray(data) && data.length > 0) {
+        listings = data;
+        renderListings();
+        return;
+      }
+    } catch (err) {
+      console.warn("Fetch error, using initial listings:", err);
     }
-  } else {
-    listings = [...SAMPLE_LISTINGS];
   }
+
+  // Fallback to sample listings
+  listings = [...SAMPLE_LISTINGS];
   renderListings();
 }
 
+/* Render listings with filter/sort support */
+function renderListings() {
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const category = document.getElementById('filterCategory').value;
+  const age = document.getElementById('filterAge').value;
+  const sort = document.getElementById('sortPrice').value;
+
+  let filtered = listings.filter(item => {
+    const matchSearch = !search || 
+      (item.title && item.title.toLowerCase().includes(search)) ||
+      (item.location && item.location.toLowerCase().includes(search)) ||
+      (item.name && item.name.toLowerCase().includes(search));
+
+    const matchCategory = !category || item.category === category;
+    const matchAge = !age || item.target_age === age;
+
+    return matchSearch && matchCategory && matchAge;
+  });
+
+  if (sort === 'low') filtered.sort((a, b) => Number(a.cost) - Number(b.cost));
+  if (sort === 'high') filtered.sort((a, b) => Number(b.cost) - Number(a.cost));
+
+  const resultCount = document.getElementById('resultCount');
+  resultCount.textContent = `Showing ${filtered.length} of ${listings.length} activity listings`;
+
+  const container = document.getElementById('listingsContainer');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="col-span-full text-center py-12 bg-white rounded-2xl border border-stone-200 space-y-3">
+        <i class="fa-solid fa-volleyball text-4xl text-amber-500"></i>
+        <h3 class="text-lg font-bold text-stone-800">No events found matching filters</h3>
+        <p class="text-xs text-stone-500">Try adjusting your category or search terms, or share a listing!</p>
+        <button onclick="resetFilters()" class="text-xs font-bold text-emerald-700 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-200">
+          Reset All Filters
+        </button>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(item => `
+    <article class="bg-white border border-stone-200 rounded-2xl p-5 flex flex-col justify-between shadow-sm hover:shadow-md transition">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 uppercase tracking-wider">
+            ${escapeHtml(item.category || 'General')}
+          </span>
+          <span class="text-xs font-bold text-amber-600">
+            ${Number(item.cost) === 0 ? 'FREE' : '$' + Number(item.cost).toFixed(2)}
+          </span>
+        </div>
+
+        <h3 class="text-lg font-bold text-stone-900 leading-snug">
+          ${escapeHtml(item.title)}
+        </h3>
+
+        <div class="space-y-1 text-xs text-stone-500">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-location-dot text-emerald-700 w-4"></i>
+            <span>${escapeHtml(item.location)}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-calendar-day text-emerald-700 w-4"></i>
+            <span>${formatDateTime(item.date_time)}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-user text-emerald-700 w-4"></i>
+            <span>Shared by ${escapeHtml(item.name)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+        <span class="bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-md">
+          ${escapeHtml(item.target_age || 'All Ages')}
+        </span>
+        <span class="text-emerald-800 font-bold">
+          Active Listing
+        </span>
+      </div>
+    </article>
+  `).join('');
+}
+
+/* Category Quick-Filter */
+function selectCategory(catName) {
+  document.getElementById('filterCategory').value = catName;
+  showView('look');
+  renderListings();
+  document.getElementById('viewLook').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* Reset toolbar filters */
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterAge').value = '';
+  document.getElementById('sortPrice').value = '';
+  renderListings();
+}
+
+/* View switching between Find & Share */
 function showView(view) {
-  document.getElementById('viewLook').classList.toggle('active', view === 'look');
-  document.getElementById('viewAdd').classList.toggle('active', view === 'add');
+  document.getElementById('viewLook').classList.toggle('hidden', view !== 'look');
+  document.getElementById('viewAdd').classList.toggle('hidden', view !== 'add');
+  
   document.getElementById('tabLook').classList.toggle('active', view === 'look');
   document.getElementById('tabAdd').classList.toggle('active', view === 'add');
-  if (view === 'look') renderListings();
 }
 
-function scrollToDiscovery() {
+/* Smooth scroll helper */
+function scrollToCategories() {
   showView('look');
-  const section = document.getElementById('discoverySection');
-  if (section) {
-    section.scrollIntoView({ behavior: 'smooth' });
-  }
+  document.getElementById('categoriesSection').scrollIntoView({ behavior: 'smooth' });
 }
 
+/* About modal helpers */
 function openAboutModal() {
-  document.getElementById('aboutModal').classList.add('open');
+  document.getElementById('aboutModal').classList.remove('hidden');
 }
-
 function closeAboutModal() {
-  document.getElementById('aboutModal').classList.remove('open');
+  document.getElementById('aboutModal').classList.add('hidden');
 }
 
-function closeAboutModalOnBackdrop(e) {
-  if (e.target.id === 'aboutModal') closeAboutModal();
-}
-
-function selectCategoryCard(catName) {
-  selectedCategoryFilter = catName;
-  
-  // Highlight UI cards
-  const catMap = {
-    'Gyms': 'catCard-Gyms',
-    'Classes': 'catCard-Classes',
-    'Marathons & Races': 'catCard-Races',
-    'Coaches/Trainers': 'catCard-Coaches',
-    'Recreational Groups': 'catCard-Rec',
-    'Competitive Leagues/Teams': 'catCard-Leagues'
-  };
-
-  Object.values(catMap).forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('selected');
-  });
-
-  if (catMap[catName]) {
-    const activeEl = document.getElementById(catMap[catName]);
-    if (activeEl) activeEl.classList.add('selected');
-  }
-
-  renderListings();
-}
-
-function resetCategoryFilter() {
-  selectedCategoryFilter = "";
-  const ids = ['catCard-Gyms', 'catCard-Classes', 'catCard-Races', 'catCard-Coaches', 'catCard-Rec', 'catCard-Leagues'];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('selected');
-  });
-  renderListings();
-}
-
-function resetFilters() {
-  document.getElementById('searchQuery').value = '';
-  document.getElementById('filterAge').value = '';
-  document.getElementById('sortPrice').value = 'featured';
-  document.getElementById('freeOnly').checked = false;
-  resetCategoryFilter();
-}
-
-function formatDateTime(value) {
-  const d = new Date(value);
-  if (isNaN(d.getTime())) return value;
+/* Formatting Helpers */
+function formatDateTime(val) {
+  const d = new Date(val);
+  if (isNaN(d)) return val;
   return d.toLocaleString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
+    weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
   });
-}
-
-function formatCost(cost) {
-  const num = Number(cost);
-  return (isNaN(num) || num === 0) ? 'Free' : `$${num.toFixed(2)}`;
 }
 
 function escapeHtml(str) {
@@ -733,122 +674,11 @@ function escapeHtml(str) {
   }[m]));
 }
 
-function renderListings() {
-  const search = document.getElementById('searchQuery').value.toLowerCase().trim();
-  const age = document.getElementById('filterAge').value;
-  const sort = document.getElementById('sortPrice').value;
-  const freeOnly = document.getElementById('freeOnly').checked;
-
-  let filtered = listings.filter(l => {
-    const matchesSearch = !search || 
-      (l.title && l.title.toLowerCase().includes(search)) ||
-      (l.location && l.location.toLowerCase().includes(search)) ||
-      (l.name && l.name.toLowerCase().includes(search));
-    
-    const matchesCategory = !selectedCategoryFilter || l.category === selectedCategoryFilter;
-    const matchesAge = !age || l.target_age === age;
-    const matchesFree = !freeOnly || Number(l.cost) === 0;
-
-    return matchesSearch && matchesCategory && matchesAge && matchesFree;
-  });
-
-  if (sort === 'low') {
-    filtered.sort((a, b) => Number(a.cost) - Number(b.cost));
-  } else if (sort === 'high') {
-    filtered.sort((a, b) => Number(b.cost) - Number(a.cost));
-  } else {
-    filtered.sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
-  }
-
-  const total = filtered.length;
-  document.getElementById('resultCount').textContent =
-    total === 0 ? 'No matching listings found' : `Showing ${total} fitness listing${total === 1 ? '' : 's'}${selectedCategoryFilter ? ` in ${selectedCategoryFilter}` : ''}`;
-
-  const container = document.getElementById('listingsContainer');
-
-  if (filtered.length === 0) {
-    container.innerHTML = `
-      <div class="text-center py-12 px-4 bg-white border-2 border-dashed border-stone-200 rounded-2xl">
-        <h3 class="text-xl font-bold text-teal-950 mb-2">No fitness events found for this filter</h3>
-        <p class="text-stone-500 text-sm">Try clearing your search or share a new listing in this category!</p>
-        <button class="btn-primary mt-4" onclick="resetFilters()">Reset All Filters</button>
-      </div>`;
-    return;
-  }
-
-  container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">${filtered.map((l, idx) => `
-    <article class="bg-white border border-stone-200 rounded-2xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition">
-      <div>
-        <div class="flex justify-between items-center gap-2 mb-3">
-          <span class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-teal-950 uppercase tracking-wider">${escapeHtml(l.category)}</span>
-          ${Number(l.cost) === 0 ? '<span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">🎉 FREE</span>' : ''}
-        </div>
-        <h3 class="text-xl font-extrabold text-teal-950 leading-snug mb-3">${escapeHtml(l.title)}</h3>
-        <div class="text-xs text-stone-600 space-y-1.5 mb-4">
-          <div class="flex items-center gap-1.5">📍 ${escapeHtml(l.location)}</div>
-          <div class="flex items-center gap-1.5">📅 ${formatDateTime(l.date_time)}</div>
-          <div class="flex items-center gap-1.5">👤 Host: ${escapeHtml(l.name)}</div>
-        </div>
-      </div>
-      <div class="pt-3 border-t border-stone-100 flex justify-between items-center">
-        <span class="text-xl font-extrabold text-teal-950">${formatCost(l.cost)}</span>
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-bold text-coral-600 bg-rose-50 text-rose-700 px-2.5 py-1 rounded-md">${escapeHtml(l.target_age)}</span>
-          <button class="btn-secondary" onclick="openModalByIndex(${idx})">View</button>
-        </div>
-      </div>
-    </article>
-  `).join('')}</div>`;
-
-  window.currentCappedListings = filtered;
-}
-
-function openModalByIndex(idx) {
-  const item = window.currentCappedListings && window.currentCappedListings[idx];
-  if (!item) return;
-
-  document.getElementById('modalCat').textContent = item.category || 'Fitness';
-  document.getElementById('modalTitle').textContent = item.title || 'Untitled Activity';
-  document.getElementById('modalLoc').textContent = item.location || 'N/A';
-  document.getElementById('modalTime').textContent = formatDateTime(item.date_time);
-  document.getElementById('modalHost').textContent = item.name || 'Anonymous';
-  document.getElementById('modalAge').textContent = item.target_age || 'All Ages';
-  document.getElementById('modalCost').textContent = formatCost(item.cost);
-
-  document.getElementById('detailsModal').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('detailsModal').classList.remove('open');
-}
-
-function closeModalOnBackdrop(e) {
-  if (e.target.id === 'detailsModal') closeModal();
-}
-
-function copyShareLink() {
-  const title = document.getElementById('modalTitle').textContent;
-  const time = document.getElementById('modalTime').textContent;
-  const loc = document.getElementById('modalLoc').textContent;
-  const shareText = `Check out this local fitness event: "${title}" on ${time} at ${loc}!`;
-
-  const el = document.createElement('textarea');
-  el.value = shareText;
-  document.body.appendChild(el);
-  el.select();
-  document.execCommand('copy');
-  document.body.removeChild(el);
-  
-  const copyBtn = document.querySelector('#detailsModal .btn-secondary');
-  const orig = copyBtn.textContent;
-  copyBtn.textContent = '✅ Copied!';
-  setTimeout(() => copyBtn.textContent = orig, 1800);
-}
-
-async function handleFormSubmit(e) {
+/* Form Submit Event */
+document.getElementById('addForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const msg = document.getElementById('formMsg');
-  const btn = document.getElementById('btnSubmit');
+  const btn = document.getElementById('submitBtn');
 
   const name = document.getElementById('fName').value.trim();
   const title = document.getElementById('fTitle').value.trim();
@@ -859,17 +689,13 @@ async function handleFormSubmit(e) {
   const category = document.getElementById('fCategory').value;
 
   if (!name || !title || !location || !dateTime || cost === '' || !age || !category) {
-    msg.textContent = '⚠️ Please fill in all required fields.';
-    msg.className = 'text-sm font-semibold text-rose-600';
+    msg.textContent = 'Please complete all required fields.';
+    msg.className = 'text-xs font-bold text-red-600 py-2';
     return;
   }
 
-  btn.disabled = true;
-  msg.textContent = 'Sharing listing...';
-  msg.className = 'text-sm font-semibold text-teal-800';
-
-  const newEntry = {
-    id: 'user-' + Date.now(),
+  const newListing = {
+    id: "list-" + Date.now(),
     name,
     title,
     location,
@@ -879,44 +705,59 @@ async function handleFormSubmit(e) {
     category
   };
 
-  listings.unshift(newEntry);
+  btn.disabled = true;
+  msg.textContent = 'Publishing your listing...';
+  msg.className = 'text-xs font-bold text-emerald-700 py-2';
 
   if (supabaseClient) {
     try {
-      await supabaseClient.from('fitness_listings').insert({
-        name, title, location,
-        date_time: new Date(dateTime).toISOString(),
-        cost: Number(cost),
-        target_age: age,
-        category
-      });
+      const { data, error } = await supabaseClient
+        .from('fitness_listings')
+        .insert({
+          name,
+          title,
+          location,
+          date_time: newListing.date_time,
+          cost: newListing.cost,
+          target_age: age,
+          category
+        })
+        .select('*')
+        .single();
+
+      if (!error && data) {
+        listings.unshift(data);
+      } else {
+        listings.unshift(newListing);
+      }
     } catch (err) {
-      console.warn('Supabase insert fallback:', err);
+      console.warn("Supabase insert fallback:", err);
+      listings.unshift(newListing);
     }
+  } else {
+    listings.unshift(newListing);
   }
 
-  document.getElementById('addForm').reset();
-  msg.textContent = '🎉 Listing shared successfully!';
-  msg.className = 'text-sm font-semibold text-emerald-700';
   btn.disabled = false;
+  this.reset();
+  msg.textContent = '🎉 Listing shared successfully!';
+  msg.className = 'text-xs font-bold text-emerald-700 py-2';
 
   setTimeout(() => {
     msg.textContent = '';
     showView('look');
+    renderListings();
   }, 1200);
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(10, 0, 0, 0);
-  const localISO = new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-  const dtInput = document.getElementById('fDateTime');
-  if (dtInput) dtInput.value = localISO;
-
-  initBackend();
-  loadListings();
 });
+
+/* Initialize application */
+try {
+  initSupabase();
+  loadListings();
+} catch (err) {
+  console.error("Initialization error:", err);
+  loadListings();
+}
 </script>
 </body>
 </html>
