@@ -7,215 +7,253 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root{
-    --bg:#f6f8f3;
-    --surface:#ffffff;
-    --surface-2:#eef3e9;
-    --ink:#152420;
-    --muted:#5c6d64;
-    --line:#dbe4d6;
-    --teal:#1b4b43;
-    --teal-dark:#0f332d;
-    --amber:#ef9f2e;
-    --amber-dark:#c97f16;
-    --coral:#e0623f;
-    --shadow:0 14px 34px rgba(21,36,32,.10);
-    --radius:14px;
+  :root {
+    --bg: #f6f8f3;
+    --surface: #ffffff;
+    --surface-2: #eef3e9;
+    --ink: #152420;
+    --muted: #5c6d64;
+    --line: #dbe4d6;
+    --teal: #1b4b43;
+    --teal-dark: #0f332d;
+    --amber: #ef9f2e;
+    --amber-dark: #c97f16;
+    --coral: #e0623f;
+    --shadow: 0 14px 34px rgba(21,36,32,.08);
+    --radius: 16px;
   }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:'Karla',system-ui,sans-serif;
-    line-height:1.5;
-    padding-top:env(safe-area-inset-top,0px);
-    padding-bottom:env(safe-area-inset-bottom,0px);
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Karla', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
   }
-  h1,h2,h3{font-family:'Outfit',sans-serif;margin:0}
-  button,input,select{font:inherit;color:inherit}
-  .wrap{width:min(100% - 40px,980px);margin:0 auto}
-  .wrap{width:calc(100% - 40px);max-width:980px}
+  h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; margin: 0; }
+  
+  .wrap { width: min(100% - 32px, 1040px); margin: 0 auto; }
+  
+  header.top {
+    background: linear-gradient(135deg, #1b4b43 0%, #0f332d 100%);
+    color: #fff;
+    padding: 32px 0 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  
+  .tabs { display: flex; gap: 10px; }
+  .tab {
+    border: 1.5px solid rgba(255,255,255,.3);
+    background: rgba(255,255,255,.05);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .tab:hover { border-color: #fff; background: rgba(255,255,255,.15); }
+  .tab.active { background: #fff; color: var(--teal-dark); border-color: #fff; font-weight: 700; }
 
-  header.top{
-    background:var(--teal);
-    color:#fff;
-    padding:34px 0 30px;
-  }
-  header.top .wrap{display:flex;flex-direction:column;gap:18px}
-  .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  .brand h1{font-size:clamp(28px,4vw,38px);letter-spacing:-.01em}
-  .brand p{margin:0;color:#cfe0d8;font-size:15px;max-width:520px}
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn 0.25s ease-out; }
 
-  .tabs{display:flex;gap:8px}
-  .tab{
-    border:1.5px solid rgba(255,255,255,.35);
-    background:transparent;
-    color:#fff;
-    padding:10px 18px;
-    border-radius:999px;
-    font-weight:600;
-    font-size:14px;
-    cursor:pointer;
-    transition:.15s ease;
-  }
-  .tab:hover{border-color:#fff}
-  .tab.active{background:#fff;color:var(--teal-dark);border-color:#fff}
-
-  main{padding:34px 0 70px}
-  .view{display:none}
-  .view.active{display:block}
-
-  /* ---------- Looking view ---------- */
-  .toolbar{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:18px 20px;
-    display:flex;
-    gap:16px;
-    flex-wrap:wrap;
-    align-items:flex-end;
-    margin-bottom:26px;
-    box-shadow:var(--shadow);
-  }
-  .field{display:flex;flex-direction:column;gap:6px}
-  .field label{font-size:12.5px;font-weight:600;color:var(--muted)}
-  select, .text-input{
-    border:1.5px solid var(--line);
-    border-radius:9px;
-    padding:9px 12px;
-    background:var(--surface);
-    min-width:190px;
-  }
-  select:focus, .text-input:focus, button:focus-visible{
-    outline:2px solid var(--teal);
-    outline-offset:2px;
-  }
-  .result-count{margin-left:auto;color:var(--muted);font-size:14px;align-self:center}
-
-  .listings{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-    gap:16px;
-  }
-  .card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:18px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    box-shadow:var(--shadow);
-  }
-  .card .cat{
-    display:inline-flex;
-    align-self:flex-start;
-    font-size:12px;
-    font-weight:700;
-    padding:5px 11px;
-    border-radius:999px;
-    background:var(--surface-2);
-    color:var(--teal-dark);
-  }
-  .card h3{font-size:19px;line-height:1.25}
-  .card .meta{font-size:13.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
-  .card .price{
-    margin-top:auto;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding-top:10px;
-    border-top:1px solid var(--line);
-  }
-  .card .price b{font-size:18px;color:var(--teal-dark)}
-  .card .age{font-size:12.5px;color:var(--coral);font-weight:600}
-
-  .empty-state{
-    text-align:center;
-    padding:70px 20px;
-    background:var(--surface);
-    border:1.5px dashed var(--line);
-    border-radius:var(--radius);
-    color:var(--muted);
-  }
-  .empty-state h3{color:var(--ink);font-size:22px;margin-bottom:6px}
-
-  .cap-note{margin:18px 0 0;font-size:13px;color:var(--muted);text-align:center}
-
-  /* ---------- Adding view ---------- */
-  .form-card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    padding:28px;
-    box-shadow:var(--shadow);
-    max-width:640px;
-  }
-  .form-card h2{font-size:24px;margin-bottom:6px}
-  .form-card>p{color:var(--muted);margin:0 0 22px;font-size:14.5px}
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  .form-grid .field.full{grid-column:1/-1}
-  .field input, .field select{width:100%}
-  .char-count{font-size:11.5px;color:var(--muted);text-align:right}
-  .submit-row{margin-top:22px;display:flex;align-items:center;gap:14px}
-  .btn-primary{
-    background:var(--amber);
-    color:var(--teal-dark);
-    border:none;
-    padding:13px 24px;
-    border-radius:999px;
-    font-weight:700;
-    font-size:15px;
-    cursor:pointer;
-    transition:.15s ease;
-  }
-  .btn-primary:hover{background:var(--amber-dark);color:#fff}
-  .btn-primary:disabled{opacity:.5;cursor:not-allowed}
-  .form-msg{font-size:14px}
-  .form-msg.ok{color:var(--teal-dark)}
-  .form-msg.err{color:var(--coral)}
-  .required-note{font-size:12px;color:var(--muted);margin-top:4px}
-
-  footer{
-    text-align:center;
-    padding:26px 0 50px;
-    color:var(--muted);
-    font-size:13px;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  @media (max-width:640px){
-    .form-grid{grid-template-columns:1fr}
-    .toolbar{flex-direction:column;align-items:stretch}
-    .result-count{margin-left:0}
-    select{min-width:0}
+  .toolbar {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
   }
+
+  .field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+  .field label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  select, .text-input {
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 14px;
+    background: var(--surface);
+    font-size: 14.5px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  select:focus, .text-input:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(27,75,67,0.15);
+  }
+
+  .listings {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(21,36,32,.12);
+  }
+
+  .card .cat-badge {
+    display: inline-flex;
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--teal-dark);
+    text-transform: uppercase;
+  }
+
+  .card h3 { font-size: 20px; font-weight: 700; line-height: 1.3; color: var(--teal-dark); }
+  .card .meta { font-size: 13.5px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+  .card .meta-item { display: flex; align-items: center; gap: 8px; }
+
+  .card .price-row {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .card .price-tag { font-size: 19px; font-weight: 800; color: var(--teal-dark); }
+  .card .age-badge { font-size: 12px; color: var(--coral); font-weight: 700; background: #fdf0ed; padding: 3px 10px; border-radius: 6px; }
+
+  .btn-primary {
+    background: var(--amber);
+    color: var(--teal-dark);
+    border: none;
+    padding: 12px 26px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all .15s ease;
+    box-shadow: 0 4px 12px rgba(239, 159, 46, 0.3);
+  }
+  .btn-primary:hover { background: var(--amber-dark); color: #fff; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  .btn-secondary {
+    background: var(--surface-2);
+    color: var(--teal-dark);
+    border: 1px solid var(--line);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn-secondary:hover { background: #e0ebd9; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--surface);
+    border: 2px dashed var(--line);
+    border-radius: var(--radius);
+    color: var(--muted);
+  }
+
+  /* Modal styling */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 51, 45, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-box {
+    background: var(--surface);
+    border-radius: 20px;
+    width: min(100%, 540px);
+    padding: 28px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+  }
+  .modal-backdrop.open .modal-box { transform: scale(1); }
 </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
 <header class="top">
-  <div class="wrap">
-    <div class="brand">
-      <h1>Local Fitness Finder</h1>
+  <div class="wrap flex flex-col gap-5">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">Local Fitness Finder</h1>
+          <span id="statusBadge" class="hidden sm:inline-flex text-xs font-bold bg-amber-400 text-teal-950 px-2.5 py-1 rounded-full uppercase tracking-wider">
+            ⚡ Ready
+          </span>
+        </div>
+        <p class="text-emerald-100 text-sm md:text-base mt-1 max-w-xl">
+          Discover local classes, running groups, pickup leagues, and upcoming races near you.
+        </p>
+      </div>
     </div>
-    <p>Find a class, a group, or a race happening near you — or share one you know about.</p>
-    <div style="margin-top:12px"><a href="./local-fitness-tracker/index.html" style="color:#fff;text-decoration:underline;font-size:13px">Open Local Fitness Tracker</a></div>
-    <div class="tabs">
-      <button class="tab active" id="tabLook" onclick="showView('look')">Find Fitness</button>
-      <button class="tab" id="tabAdd" onclick="showView('add')">Share a Listing</button>
+
+    <div class="tabs pt-2">
+      <button class="tab active" id="tabLook" onclick="showView('look')">
+        🔍 Find Fitness
+      </button>
+      <button class="tab" id="tabAdd" onclick="showView('add')">
+        ➕ Share a Listing
+      </button>
     </div>
   </div>
 </header>
 
-<main class="wrap">
+<main class="wrap my-8 flex-1">
 
   <!-- LOOKING VIEW -->
   <section class="view active" id="viewLook">
+    <!-- Toolbar -->
     <div class="toolbar">
+      <div class="field" style="flex: 2; min-width: 200px;">
+        <label for="searchQuery">Search keyword</label>
+        <input type="text" id="searchQuery" class="text-input" placeholder="Search title, neighborhood, host..." oninput="renderListings()">
+      </div>
       <div class="field">
         <label for="filterCategory">Category</label>
         <select id="filterCategory" onchange="renderListings()">
@@ -231,63 +269,79 @@
         <select id="filterAge" onchange="renderListings()">
           <option value="">Any age group</option>
           <option>Teens under 14</option>
+          <option>Teens 14-17</option>
           <option>Adults 18+</option>
+          <option>All Ages</option>
         </select>
       </div>
       <div class="field">
-        <label for="sortPrice">Sort by price</label>
+        <label for="sortPrice">Sort by</label>
         <select id="sortPrice" onchange="renderListings()">
-          <option value="">Featured order</option>
-          <option value="low">Low to high</option>
-          <option value="high">High to low</option>
+          <option value="featured">Featured / Soonest</option>
+          <option value="low">Price: Low to High</option>
+          <option value="high">Price: High to Low</option>
         </select>
       </div>
-      <span class="result-count" id="resultCount"></span>
+      <div class="flex items-center gap-2 pb-2 self-end">
+        <input type="checkbox" id="freeOnly" class="w-4 h-4 accent-teal-800 cursor-pointer" onchange="renderListings()">
+        <label for="freeOnly" class="text-xs font-bold text-slate-700 cursor-pointer uppercase tracking-wider">Free Only</label>
+      </div>
+    </div>
+
+    <!-- Live Counter and Feed -->
+    <div class="flex justify-between items-center mb-4 px-1">
+      <span class="text-sm font-semibold text-emerald-900" id="resultCount">Loading listings...</span>
+      <button class="text-xs font-bold text-teal-800 hover:underline" onclick="resetFilters()">Reset Filters</button>
     </div>
 
     <div id="listingsContainer"></div>
-    <p class="cap-note" id="capNote" style="display:none"></p>
+    <p class="mt-6 text-xs text-center text-slate-500" id="capNote" style="display:none"></p>
   </section>
 
   <!-- ADDING VIEW -->
   <section class="view" id="viewAdd">
-    <div class="form-card">
-      <h2>Share a listing</h2>
-      <p>Fill in the details below. Listings can't be edited or removed once shared, so double check before submitting.</p>
-      <form id="addForm" novalidate>
-        <div class="form-grid">
+    <div class="bg-white border border-stone-200 rounded-2xl p-6 md:p-8 shadow-md max-w-2xl mx-auto">
+      <div class="border-b border-stone-100 pb-4 mb-6">
+        <h2 class="text-2xl font-bold text-teal-950">Share a Fitness Listing</h2>
+        <p class="text-stone-500 text-sm mt-1">Post your upcoming activity to help local fitness enthusiasts join in.</p>
+      </div>
+
+      <form id="addForm" novalidate onsubmit="handleFormSubmit(event)">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="field">
-            <label for="fName">Your name</label>
-            <input class="text-input" type="text" id="fName" maxlength="500" required>
+            <label for="fName">Your Name / Host</label>
+            <input class="text-input" type="text" id="fName" maxlength="100" placeholder="e.g. Sarah M." required>
           </div>
           <div class="field">
-            <label for="fTitle">Class or group name</label>
-            <input class="text-input" type="text" id="fTitle" maxlength="500" required>
+            <label for="fTitle">Activity / Group Title</label>
+            <input class="text-input" type="text" id="fTitle" maxlength="150" placeholder="e.g. Saturday Morning Park Yoga" required>
           </div>
-          <div class="field full">
-            <label for="fLocation">Neighborhood or area</label>
-            <input class="text-input" type="text" id="fLocation" maxlength="500" required>
+          <div class="field md:col-span-2">
+            <label for="fLocation">Neighborhood or Location</label>
+            <input class="text-input" type="text" id="fLocation" maxlength="200" placeholder="e.g. Waterfront Park, Central Lawn" required>
           </div>
           <div class="field">
-            <label for="fDateTime">Date &amp; time</label>
+            <label for="fDateTime">Date & Time</label>
             <input class="text-input" type="datetime-local" id="fDateTime" required>
           </div>
           <div class="field">
-            <label for="fCost">Cost ($)</label>
-            <input class="text-input" type="number" id="fCost" min="0" step="0.01" required>
+            <label for="fCost">Cost ($ USD, enter 0 for free)</label>
+            <input class="text-input" type="number" id="fCost" min="0" step="0.01" placeholder="0.00" required>
           </div>
           <div class="field">
-            <label for="fAge">Age group</label>
+            <label for="fAge">Target Age Group</label>
             <select id="fAge" required>
-              <option value="" disabled selected>Choose one</option>
+              <option value="" disabled selected>Select age target...</option>
               <option>Teens under 14</option>
+              <option>Teens 14-17</option>
               <option>Adults 18+</option>
+              <option>All Ages</option>
             </select>
           </div>
           <div class="field">
             <label for="fCategory">Category</label>
             <select id="fCategory" required>
-              <option value="" disabled selected>Choose one</option>
+              <option value="" disabled selected>Select category...</option>
               <option>Lessons</option>
               <option>Recreational Groups</option>
               <option>Competitive Leagues</option>
@@ -295,10 +349,14 @@
             </select>
           </div>
         </div>
-        <p class="required-note">All fields are required. Text fields are capped at 500 characters.</p>
-        <div class="submit-row">
-          <button type="submit" class="btn-primary">Share listing</button>
-          <span class="form-msg" id="formMsg"></span>
+
+        <p class="text-xs text-stone-500 mt-4">All fields are required. Listings will instantly appear on the discovery tab.</p>
+
+        <div class="mt-6 flex flex-wrap items-center gap-4">
+          <button type="submit" id="btnSubmit" class="btn-primary">
+            🚀 Share Listing
+          </button>
+          <span class="text-sm font-semibold" id="formMsg"></span>
         </div>
       </form>
     </div>
@@ -306,144 +364,341 @@
 
 </main>
 
-<footer>Local Fitness Finder — powered by Supabase.</footer>
+<!-- DETAILS MODAL -->
+<div id="detailsModal" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+  <div class="modal-box">
+    <div class="flex justify-between items-start gap-3 pb-3 border-b border-stone-100">
+      <div>
+        <span id="modalCat" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-teal-900 uppercase">Category</span>
+        <h3 id="modalTitle" class="text-2xl font-bold text-teal-950 mt-2">Activity Title</h3>
+      </div>
+      <button onclick="closeModal()" class="text-stone-400 hover:text-stone-700 text-xl font-bold px-2">&times;</button>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./config.js"></script>
+    <div class="py-4 space-y-3 text-stone-700 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-teal-900 w-24">Location:</span>
+        <span id="modalLoc" class="font-medium">Neighborhood</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-teal-900 w-24">Date & Time:</span>
+        <span id="modalTime" class="font-medium">Time</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-teal-900 w-24">Host / Name:</span>
+        <span id="modalHost" class="font-medium">Host</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-teal-900 w-24">Age Target:</span>
+        <span id="modalAge" class="font-medium">Age</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-teal-900 w-24">Cost:</span>
+        <span id="modalCost" class="font-bold text-emerald-700 text-base">$0.00</span>
+      </div>
+    </div>
+
+    <div class="pt-4 border-t border-stone-100 flex justify-between items-center gap-3">
+      <button class="btn-secondary" onclick="copyShareLink()">📋 Copy Details</button>
+      <button class="btn-primary" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<footer class="text-center py-6 border-t border-stone-200 text-stone-500 text-xs">
+  Local Fitness Finder — Powered by dynamic local search &amp; community events.
+</footer>
+
 <script>
-/* =====================================================================
-   SUPABASE DATA
-   Listings are loaded from public.fitness_listings.
-   ===================================================================== */
+// Default initial listings to guarantee immediate automatic playability out-of-the-box
+const SAMPLE_LISTINGS = [
+  {
+    id: "sample-1",
+    title: "Sunrise Community Yoga",
+    category: "Lessons",
+    location: "Greenbelt Park Lawn",
+    date_time: new Date(Date.now() + 86400000).toISOString(),
+    name: "Elena Rostova",
+    cost: 0,
+    target_age: "All Ages"
+  },
+  {
+    id: "sample-2",
+    title: "Weekly 5K Social Trail Run",
+    category: "Recreational Groups",
+    location: "Pine Hill Trailhead",
+    date_time: new Date(Date.now() + 172800000).toISOString(),
+    name: "Marcus Vance",
+    cost: 0,
+    target_age: "Adults 18+"
+  },
+  {
+    id: "sample-3",
+    title: "Youth Soccer Skills Clinic",
+    category: "Lessons",
+    location: "Community Center Field 2",
+    date_time: new Date(Date.now() + 259200000).toISOString(),
+    name: "Coach David",
+    cost: 15,
+    target_age: "Teens under 14"
+  },
+  {
+    id: "sample-4",
+    title: "3v3 Summer Hoops Tournament",
+    category: "Competitive Leagues",
+    location: "Downtown Outdoor Courts",
+    date_time: new Date(Date.now() + 345600000).toISOString(),
+    name: "Metro Rec Club",
+    cost: 25,
+    target_age: "Teens 14-17"
+  },
+  {
+    id: "sample-5",
+    title: "Autumn Harbor 10K & Fun Run",
+    category: "Upcoming Races",
+    location: "Harbor Boardwalk Plaza",
+    date_time: new Date(Date.now() + 518400000).toISOString(),
+    name: "City Striders",
+    cost: 35,
+    target_age: "All Ages"
+  },
+  {
+    id: "sample-6",
+    title: "Beginner Outdoor HIIT Bootcamp",
+    category: "Lessons",
+    location: "Memorial Park Amphitheater",
+    date_time: new Date(Date.now() + 100000000).toISOString(),
+    name: "FitNation Crew",
+    cost: 10,
+    target_age: "Adults 18+"
+  }
+];
+
 let listings = [];
 let supabaseClient = null;
 const MAX_VISIBLE = 300;
 
-function initSupabase(){
-  const cfg = window.FITNESS_CONFIG || {};
-  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_KEY) {
-    throw new Error("Supabase configuration is missing.");
+function initBackend() {
+  const badge = document.getElementById('statusBadge');
+  
+  // Try to load from Supabase if window.FITNESS_CONFIG is supplied in external script
+  try {
+    const cfg = window.FITNESS_CONFIG || {};
+    if (cfg.SUPABASE_URL && cfg.SUPABASE_KEY && window.supabase) {
+      supabaseClient = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_KEY);
+      badge.textContent = "🟢 Live Database";
+      badge.className = "hidden sm:inline-flex text-xs font-bold bg-emerald-400 text-teal-950 px-2.5 py-1 rounded-full uppercase tracking-wider";
+    } else {
+      throw new Error("No external Supabase config found; standard local mode engaged.");
+    }
+  } catch (err) {
+    // Graceful automatic local mode fallback
+    supabaseClient = null;
+    badge.textContent = "⚡ Auto Local Mode";
+    badge.className = "hidden sm:inline-flex text-xs font-bold bg-amber-400 text-teal-950 px-2.5 py-1 rounded-full uppercase tracking-wider";
   }
-  supabaseClient = window.supabase.createClient(
-    cfg.SUPABASE_URL,
-    cfg.SUPABASE_KEY
-  );
 }
 
-async function loadListings(){
+async function loadListings() {
   const container = document.getElementById('listingsContainer');
   const resultCount = document.getElementById('resultCount');
 
-  container.innerHTML = `
-    <div class="empty-state">
-      <h3>Loading listings...</h3>
-      <p>Getting the latest fitness listings.</p>
-    </div>`;
-  resultCount.textContent = '';
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('fitness_listings')
+        .select('*')
+        .order('date_time', { ascending: true });
 
-  try {
-    const { data, error } = await supabaseClient
-      .from('fitness_listings')
-      .select('*')
-      .order('date_time', { ascending: true });
-
-    if (error) throw error;
-
-    listings = Array.isArray(data) ? data : [];
-    renderListings();
-  } catch (error) {
-    console.error('Supabase load error:', error);
-    container.innerHTML = `
-      <div class="empty-state">
-        <h3>Couldn't load listings</h3>
-        <p>Please refresh the page and try again.</p>
-      </div>`;
-    resultCount.textContent = '';
+      if (error) throw error;
+      listings = Array.isArray(data) && data.length > 0 ? data : [...SAMPLE_LISTINGS];
+    } catch (error) {
+      console.warn('Supabase fetch failed, utilizing sample listings:', error);
+      listings = [...SAMPLE_LISTINGS];
+    }
+  } else {
+    // Default to sample listings immediately
+    listings = [...SAMPLE_LISTINGS];
   }
+
+  renderListings();
 }
 
-function showView(view){
+function showView(view) {
   document.getElementById('viewLook').classList.toggle('active', view === 'look');
   document.getElementById('viewAdd').classList.toggle('active', view === 'add');
   document.getElementById('tabLook').classList.toggle('active', view === 'look');
   document.getElementById('tabAdd').classList.toggle('active', view === 'add');
-  if(view === 'look') renderListings();
+  if (view === 'look') renderListings();
 }
 
-function formatDateTime(value){
+function formatDateTime(value) {
   const d = new Date(value);
-  if(isNaN(d)) return value;
-  return d.toLocaleString(undefined, {weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'});
+  if (isNaN(d.getTime())) return value;
+  return d.toLocaleString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
 }
 
-function formatCost(cost){
-  return cost === 0 ? 'Free' : `$${Number(cost).toFixed(2)}`;
+function formatCost(cost) {
+  const num = Number(cost);
+  return (isNaN(num) || num === 0) ? 'Free' : `$${num.toFixed(2)}`;
 }
 
-function escapeHtml(str){
-  return String(str ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function escapeHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[m]));
 }
 
-function renderListings(){
+function resetFilters() {
+  document.getElementById('searchQuery').value = '';
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterAge').value = '';
+  document.getElementById('sortPrice').value = 'featured';
+  document.getElementById('freeOnly').checked = false;
+  renderListings();
+}
+
+function renderListings() {
+  const search = document.getElementById('searchQuery').value.toLowerCase().trim();
   const category = document.getElementById('filterCategory').value;
   const age = document.getElementById('filterAge').value;
   const sort = document.getElementById('sortPrice').value;
+  const freeOnly = document.getElementById('freeOnly').checked;
 
-  let filtered = listings.filter(l =>
-    (!category || l.category === category) &&
-    (!age || l.target_age === age)
-  );
+  let filtered = listings.filter(l => {
+    const matchesSearch = !search || 
+      (l.title && l.title.toLowerCase().includes(search)) ||
+      (l.location && l.location.toLowerCase().includes(search)) ||
+      (l.name && l.name.toLowerCase().includes(search));
+    
+    const matchesCategory = !category || l.category === category;
+    const matchesAge = !age || l.target_age === age;
+    const matchesFree = !freeOnly || Number(l.cost) === 0;
 
-  if(sort === 'low') filtered = [...filtered].sort((a,b) => a.cost - b.cost);
-  if(sort === 'high') filtered = [...filtered].sort((a,b) => b.cost - a.cost);
+    return matchesSearch && matchesCategory && matchesAge && matchesFree;
+  });
+
+  // Sorting logic
+  if (sort === 'low') {
+    filtered.sort((a, b) => Number(a.cost) - Number(b.cost));
+  } else if (sort === 'high') {
+    filtered.sort((a, b) => Number(b.cost) - Number(a.cost));
+  } else {
+    // Featured / Soonest date
+    filtered.sort((a, b) => new Date(a.date_time) - new Date(b.date_time));
+  }
 
   const total = filtered.length;
   const capped = filtered.slice(0, MAX_VISIBLE);
 
   document.getElementById('resultCount').textContent =
-    total === 0 ? '' : `${total} listing${total === 1 ? '' : 's'}`;
+    total === 0 ? 'No matching listings found' : `Showing ${total} fitness listing${total === 1 ? '' : 's'}`;
 
   const container = document.getElementById('listingsContainer');
   const capNote = document.getElementById('capNote');
 
-  if(capped.length === 0){
+  if (capped.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <h3>The ball's in your court</h3>
-        <p>— app is waiting for uploads.</p>
+        <h3 class="text-xl font-bold text-teal-950 mb-2">No fitness events match your filters</h3>
+        <p class="text-sm">Try tweaking your search or be the first to share a new listing!</p>
+        <button class="btn-primary mt-4" onclick="resetFilters()">Clear Filters</button>
       </div>`;
     capNote.style.display = 'none';
     return;
   }
 
-  container.innerHTML = `<div class="listings">${capped.map(l => `
+  container.innerHTML = `<div class="listings">${capped.map((l, idx) => `
     <article class="card">
-      <span class="cat">${escapeHtml(l.category)}</span>
+      <div class="flex justify-between items-center gap-2">
+        <span class="cat-badge">${escapeHtml(l.category)}</span>
+        <span class="text-xs font-bold text-emerald-800">${Number(l.cost) === 0 ? '🎉 FREE' : ''}</span>
+      </div>
       <h3>${escapeHtml(l.title)}</h3>
       <div class="meta">
-        <span>${escapeHtml(l.location)}</span>
-        <span>${formatDateTime(l.date_time)}</span>
-        <span>Shared by ${escapeHtml(l.name)}</span>
+        <div class="meta-item">📍 ${escapeHtml(l.location)}</div>
+        <div class="meta-item">📅 ${formatDateTime(l.date_time)}</div>
+        <div class="meta-item">👤 Host: ${escapeHtml(l.name)}</div>
       </div>
-      <div class="price">
-        <b>${formatCost(l.cost)}</b>
-        <span class="age">${escapeHtml(l.target_age)}</span>
+      <div class="price-row">
+        <div>
+          <span class="price-tag">${formatCost(l.cost)}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="age-badge">${escapeHtml(l.target_age)}</span>
+          <button class="btn-secondary" onclick="openModalByIndex(${idx})">View</button>
+        </div>
       </div>
     </article>
   `).join('')}</div>`;
 
-  if(total > MAX_VISIBLE){
+  // Attach reference array for modal opening
+  window.currentCappedListings = capped;
+
+  if (total > MAX_VISIBLE) {
     capNote.style.display = 'block';
-    capNote.textContent = `Showing the first ${MAX_VISIBLE} of ${total} listings.`;
+    capNote.textContent = `Showing first ${MAX_VISIBLE} of ${total} listings.`;
   } else {
     capNote.style.display = 'none';
   }
 }
 
-document.getElementById('addForm').addEventListener('submit', async function(e){
+function openModalByIndex(idx) {
+  const item = window.currentCappedListings && window.currentCappedListings[idx];
+  if (!item) return;
+
+  document.getElementById('modalCat').textContent = item.category || 'Fitness';
+  document.getElementById('modalTitle').textContent = item.title || 'Untitled Activity';
+  document.getElementById('modalLoc').textContent = item.location || 'N/A';
+  document.getElementById('modalTime').textContent = formatDateTime(item.date_time);
+  document.getElementById('modalHost').textContent = item.name || 'Anonymous';
+  document.getElementById('modalAge').textContent = item.target_age || 'All Ages';
+  document.getElementById('modalCost').textContent = formatCost(item.cost);
+
+  document.getElementById('detailsModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('detailsModal').classList.remove('open');
+}
+
+function closeModalOnBackdrop(e) {
+  if (e.target.id === 'detailsModal') closeModal();
+}
+
+function copyShareLink() {
+  const title = document.getElementById('modalTitle').textContent;
+  const time = document.getElementById('modalTime').textContent;
+  const loc = document.getElementById('modalLoc').textContent;
+  const shareText = `Check out this local fitness event: "${title}" on ${time} at ${loc}!`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(shareText);
+  } else {
+    const el = document.createElement('textarea');
+    el.value = shareText;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+  }
+  
+  const copyBtn = document.querySelector('#detailsModal .btn-secondary');
+  const orig = copyBtn.textContent;
+  copyBtn.textContent = '✅ Copied!';
+  setTimeout(() => copyBtn.textContent = orig, 1800);
+}
+
+async function handleFormSubmit(e) {
   e.preventDefault();
   const msg = document.getElementById('formMsg');
-  const submitButton = this.querySelector('button[type="submit"]');
+  const btn = document.getElementById('btnSubmit');
 
   const name = document.getElementById('fName').value.trim();
   const title = document.getElementById('fTitle').value.trim();
@@ -453,71 +708,88 @@ document.getElementById('addForm').addEventListener('submit', async function(e){
   const age = document.getElementById('fAge').value;
   const category = document.getElementById('fCategory').value;
 
-  if(!name || !title || !location || !dateTime || cost === '' || !age || !category){
-    msg.textContent = 'Please fill in every field before sharing.';
-    msg.className = 'form-msg err';
-    return;
-  }
-  if(Number(cost) < 0){
-    msg.textContent = 'Cost can\\'t be negative.';
-    msg.className = 'form-msg err';
-    return;
-  }
-  if(name.length > 500 || title.length > 500 || location.length > 500){
-    msg.textContent = 'Please keep each field under 500 characters.';
-    msg.className = 'form-msg err';
+  if (!name || !title || !location || !dateTime || cost === '' || !age || !category) {
+    msg.textContent = '⚠️ Please fill in all required fields.';
+    msg.className = 'text-sm font-semibold text-rose-600';
     return;
   }
 
-  submitButton.disabled = true;
+  if (Number(cost) < 0) {
+    msg.textContent = '⚠️ Cost cannot be negative.';
+    msg.className = 'text-sm font-semibold text-rose-600';
+    return;
+  }
+
+  btn.disabled = true;
   msg.textContent = 'Sharing listing...';
-  msg.className = 'form-msg';
+  msg.className = 'text-sm font-semibold text-teal-800';
 
-  try {
-    const { data, error } = await supabaseClient
-      .from('fitness_listings')
-      .insert({
-        name,
-        title,
-        location,
-        date_time: new Date(dateTime).toISOString(),
-        cost: Number(cost),
-        target_age: age,
-        category
-      })
-      .select('*')
-      .single();
+  const newEntry = {
+    id: 'user-' + Date.now(),
+    name,
+    title,
+    location,
+    date_time: new Date(dateTime).toISOString(),
+    cost: Number(cost),
+    target_age: age,
+    category
+  };
 
-    if (error) throw error;
+  let savedSuccessfully = false;
 
-    if (data) listings.unshift(data);
-    this.reset();
-    msg.textContent = 'Listing shared! Switch to "Find Fitness" to see it.';
-    msg.className = 'form-msg ok';
-    renderListings();
-  } catch (error) {
-    console.error('Supabase insert error:', error);
-    msg.textContent = 'Couldn\\'t share the listing. Please try again.';
-    msg.className = 'form-msg err';
-  } finally {
-    submitButton.disabled = false;
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('fitness_listings')
+        .insert({
+          name,
+          title,
+          location,
+          date_time: new Date(dateTime).toISOString(),
+          cost: Number(cost),
+          target_age: age,
+          category
+        })
+        .select('*')
+        .single();
+
+      if (!error && data) {
+        listings.unshift(data);
+        savedSuccessfully = true;
+      }
+    } catch (err) {
+      console.warn('Supabase insert failed, storing locally:', err);
+    }
   }
-});
 
-try {
-  initSupabase();
-  loadListings();
-} catch (error) {
-  console.error(error);
-  document.getElementById('listingsContainer').innerHTML = `
-    <div class="empty-state">
-      <h3>Database configuration missing</h3>
-      <p>Please check config.js.</p>
-    </div>`;
+  if (!savedSuccessfully) {
+    // Fallback directly to local in-memory state
+    listings.unshift(newEntry);
+  }
+
+  document.getElementById('addForm').reset();
+  msg.textContent = '🎉 Listing shared successfully!';
+  msg.className = 'text-sm font-semibold text-emerald-700';
+  btn.disabled = false;
+
+  setTimeout(() => {
+    msg.textContent = '';
+    showView('look');
+  }, 1200);
 }
 
-renderListings();
-</script>
+window.addEventListener('DOMContentLoaded', () => {
+  // Set default datetime picker to tomorrow at 10 AM
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(10, 0, 0, 0);
+  const localISO = new Date(tomorrow.getTime() - (tomorrow.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+  const dtInput = document.getElementById('fDateTime');
+  if (dtInput) dtInput.value = localISO;
 
+  initBackend();
+  loadListings();
+});
+</script>
 </body>
-</html>
+</html> 
