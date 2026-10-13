@@ -3,135 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Building with AI — Project Showcase</title>
+  <title>AI Lab Portfolio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
- 
+  
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-          },
-          colors: {
-            pink: {
-              50: '#fdf2f8',
-              100: '#fce7f3',
-              200: '#fbcfe8',
-              300: '#f9a8d4',
-              400: '#f472b6',
-              500: '#ec4899',
-              600: '#db2777',
-              700: '#be185d',
-              800: '#9d174d',
-              900: '#831843',
-            }
-          }
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] }
         }
       }
     }
   </script>
+
   <style>
-    body {
-      background-color: #fff0f5;
-      color: #4a2e38;
-    }
+    body { background-color: #fff0f5; color: #4a2e38; }
     .glass-card {
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 182, 193, 0.4);
     }
     .glass-nav {
-      background: rgba(255, 240, 245, 0.75);
+      background: rgba(255, 240, 245, 0.8);
       backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(249, 168, 212, 0.3);
-    }
-    .pink-glow {
-      box-shadow: 0 0 25px -5px rgba(236, 72, 153, 0.3);
-    }
-    .pink-glow-lg {
-      box-shadow: 0 12px 35px -8px rgba(236, 72, 153, 0.25);
     }
     #sparkle-canvas {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
+      inset: 0;
       pointer-events: none;
+      z-index: 0;
     }
   </style>
 </head>
+
 <body class="font-sans antialiased min-h-screen relative overflow-x-hidden selection:bg-pink-300 selection:text-pink-900">
   <canvas id="sparkle-canvas"></canvas>
- 
-  <!-- Navigation Bar -->
-  <header class="sticky top-0 z-50 glass-nav transition-all duration-300">
+
+  <header class="sticky top-0 z-50 glass-nav">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-md shadow-pink-300">
           <i class="ph-bold ph-sparkle text-lg"></i>
         </div>
-        <span class="font-bold text-lg tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-pink-700 to-rose-500">
-          AI Lab Portfolio
-        </span>
+        <span class="font-bold text-lg tracking-tight text-pink-700">AI Lab Portfolio</span>
       </div>
-      <div class="flex items-center space-x-3 text-xs sm:text-sm">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-pink-100 text-pink-700 border border-pink-200">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
-          Building with AI Class
-        </span>
-      </div>
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-pink-100 text-pink-700 border border-pink-200">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
+        Building with AI Class
+      </span>
     </div>
   </header>
 
-  <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20 space-y-12">
-   
-    <!-- Hero Banner -->
-    <section class="glass-card rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-pink-200/60 shadow-xl pink-glow">
-      <div class="absolute -right-12 -top-12 w-64 h-64 bg-pink-300/30 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="absolute -left-12 -bottom-12 w-64 h-64 bg-rose-200/40 rounded-full blur-3xl pointer-events-none"></div>
-      <div class="relative z-10 max-w-3xl space-y-5">
-        <div class="inline-flex items-center space-x-2 bg-pink-100/80 px-3.5 py-1.5 rounded-full border border-pink-200 text-pink-700 text-xs font-semibold tracking-wide uppercase">
+  <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    <section class="glass-card rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-xl">
+      <div class="relative z-10 space-y-4 max-w-2xl">
+        <div class="inline-flex items-center space-x-2 bg-pink-100 px-3 py-1 rounded-full text-pink-700 text-xs font-semibold uppercase">
           <i class="ph-fill ph-code-simple"></i>
-          <span>Student AI Showcase</span>
+          <span>Student Showcase</span>
         </div>
-       
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-pink-950 tracking-tight leading-tight">
-          Welcome to my <span class="bg-gradient-to-r from-pink-600 via-rose-500 to-pink-500 bg-clip-text text-transparent">AI Project Hub</span> ✨
+        
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-pink-950 tracking-tight">
+          Welcome to my <span class="bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent">AI Project Hub</span> ✨
         </h1>
-       
-        <p class="text-base sm:text-lg text-pink-900/80 leading-relaxed font-normal">
-          Explore the web apps, games, and intelligent prototypes created during my
-          <strong class="text-pink-800 font-semibold">Building with AI</strong> course.
+        
+        <p class="text-pink-900/80 leading-relaxed text-sm sm:text-base">
+          Explore the web apps and games created during my <strong>Building with AI</strong> course.
         </p>
 
-        <!-- Stats Chips -->
-        <div class="pt-2 flex flex-wrap gap-4 text-xs font-medium text-pink-800">
-          <div class="flex items-center space-x-2 bg-white/70 px-4 py-2 rounded-xl border border-pink-200/70 shadow-sm">
+        <div class="pt-2 flex flex-wrap gap-3 text-xs font-medium text-pink-800">
+          <div class="flex items-center space-x-2 bg-white/80 px-3.5 py-2 rounded-xl border border-pink-200 shadow-sm">
             <i class="ph-bold ph-rocket-launch text-pink-500 text-base"></i>
-            <span><strong>2</strong> Live Projects</span>
+            <span><strong>3</strong> Live Projects</span>
           </div>
-          <div class="flex items-center space-x-2 bg-white/70 px-4 py-2 rounded-xl border border-pink-200/70 shadow-sm">
-            <i class="ph-bold ph-clock text-pink-500 text-base"></i>
-            <span><strong>2</strong> Planned Prototypes</span>
-          </div>
-          <div class="flex items-center space-x-2 bg-white/70 px-4 py-2 rounded-xl border border-pink-200/70 shadow-sm">
+          <div class="flex items-center space-x-2 bg-white/80 px-3.5 py-2 rounded-xl border border-pink-200 shadow-sm">
             <i class="ph-bold ph-cpu text-pink-500 text-base"></i>
-            <span>Powered by LLMs & AI</span>
+            <span>Powered by LLMs & Supabase</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Projects Section Header & Filters -->
     <section class="space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pink-200/50 pb-4">
         <div>
@@ -139,227 +95,132 @@
             <i class="ph-bold ph-squares-four text-pink-500"></i>
             Project Showcase
           </h2>
-          <p class="text-sm text-pink-800/70">Click on any active project to launch it directly.</p>
+          <p class="text-xs sm:text-sm text-pink-800/70">Click on any project card to launch it.</p>
         </div>
 
-        <!-- Filter Tags -->
         <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-          <button onclick="filterProjects('all')" id="btn-all" class="filter-btn active px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-pink-600 text-white shadow-md shadow-pink-300">
+          <button onclick="filterProjects('all')" id="btn-all" class="filter-btn active px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-pink-600 text-white shadow-md">
             All Projects
           </button>
-          <button onclick="filterProjects('game')" id="btn-game" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/80 text-pink-800 border border-pink-200 hover:bg-pink-100 transition-all">
+          <button onclick="filterProjects('game')" id="btn-game" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-pink-800 border border-pink-200 hover:bg-pink-100 transition-all">
             Games
           </button>
-          <button onclick="filterProjects('app')" id="btn-app" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/80 text-pink-800 border border-pink-200 hover:bg-pink-100 transition-all">
+          <button onclick="filterProjects('app')" id="btn-app" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white text-pink-800 border border-pink-200 hover:bg-pink-100 transition-all">
             Web Apps
-          </button>
-          <button onclick="filterProjects('ai')" id="btn-ai" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold bg-white/80 text-pink-800 border border-pink-200 hover:bg-pink-100 transition-all">
-            AI Apps
           </button>
         </div>
       </div>
 
-      <!-- Project Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-        <!-- PROJECT 1: MEDIEVAL RUN (ACTIVE GAME) -->
-        <div class="project-card group glass-card rounded-2xl overflow-hidden border border-pink-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between" data-category="game">
+        <!-- PROJECT 1: MEDIEVAL RUN -->
+        <div class="project-card group glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 flex flex-col justify-between" data-category="game">
           <div>
-            <div class="h-44 bg-gradient-to-br from-pink-400 via-rose-300 to-pink-200 relative overflow-hidden flex items-center justify-center">
-              <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all"></div>
-              <div class="text-center transform group-hover:scale-110 transition-transform duration-300">
-                <div class="w-16 h-16 bg-white/90 rounded-2xl mx-auto flex items-center justify-center shadow-lg text-pink-600 mb-2">
-                  <i class="ph-bold ph-sword text-3xl"></i>
-                </div>
-                <span class="text-xs font-bold text-pink-900 bg-white/80 px-3 py-1 rounded-full shadow-sm">HTML5 Canvas Game</span>
+            <div class="h-40 bg-gradient-to-br from-pink-400 to-rose-300 flex items-center justify-center relative">
+              <div class="w-14 h-14 bg-white/90 rounded-2xl flex items-center justify-center text-pink-600 shadow-md">
+                <i class="ph-bold ph-sword text-2xl"></i>
               </div>
-              <span class="absolute top-3 right-3 bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-                Playable Now
-              </span>
+              <span class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">Live Game</span>
             </div>
-            <div class="p-6 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-pink-600 uppercase tracking-wider">Project #1</span>
-                <span class="text-xs text-pink-800/60">Arcade Runner</span>
-              </div>
-              <h3 class="text-xl font-bold text-pink-950 group-hover:text-pink-600 transition-colors">
-                Medieval Run ⚔️
-              </h3>
-              <p class="text-sm text-pink-900/80 leading-relaxed">
-                An interactive endless-runner quest across the kingdom! Avoid obstacles, collect items, and test your reflexes in this canvas game.
+            <div class="p-5 space-y-2">
+              <span class="text-[11px] font-semibold text-pink-600 uppercase">Project #1 • Arcade</span>
+              <h3 class="text-lg font-bold text-pink-950">Medieval Run ⚔️</h3>
+              <p class="text-xs text-pink-900/80 leading-relaxed">
+                Interactive endless-runner quest across the kingdom. Avoid obstacles and collect scores!
               </p>
             </div>
           </div>
-          <div class="p-6 pt-0">
-            <a href="medieval-run/medieval-run.html" class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-sm shadow-md shadow-pink-300 hover:shadow-lg transition-all group-hover:pink-glow">
-              <span>Play Medieval Run</span>
+          <div class="p-5 pt-0">
+            <a href="medieval-run/medieval-run.html" class="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-xs shadow-md transition-all">
+              <span>Play Game</span>
               <i class="ph-bold ph-arrow-right"></i>
             </a>
           </div>
         </div>
 
-        <!-- PROJECT 2: LOCAL FITNESS TRACKER (ACTIVE WEB APP) -->
-        <div class="project-card group glass-card rounded-2xl overflow-hidden border border-pink-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between" data-category="app">
+        <!-- PROJECT 2: LOCAL FITNESS TRACKER -->
+        <div class="project-card group glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 flex flex-col justify-between" data-category="app">
           <div>
-            <div class="h-44 bg-gradient-to-br from-rose-400 via-pink-300 to-rose-200 relative overflow-hidden flex items-center justify-center">
-              <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all"></div>
-              <div class="text-center transform group-hover:scale-110 transition-transform duration-300">
-                <div class="w-16 h-16 bg-white/90 rounded-2xl mx-auto flex items-center justify-center shadow-lg text-rose-600 mb-2">
-                  <i class="ph-bold ph-barbell text-3xl"></i>
-                </div>
-                <span class="text-xs font-bold text-pink-900 bg-white/80 px-3 py-1 rounded-full shadow-sm">Web Application</span>
+            <div class="h-40 bg-gradient-to-br from-rose-400 to-pink-300 flex items-center justify-center relative">
+              <div class="w-14 h-14 bg-white/90 rounded-2xl flex items-center justify-center text-rose-600 shadow-md">
+                <i class="ph-bold ph-barbell text-2xl"></i>
               </div>
-              <span class="absolute top-3 right-3 bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-                Active Tool
-              </span>
+              <span class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">Active Tool</span>
             </div>
-            <div class="p-6 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-pink-600 uppercase tracking-wider">Project #2</span>
-                <span class="text-xs text-pink-800/60">Health & Fitness</span>
-              </div>
-              <h3 class="text-xl font-bold text-pink-950 group-hover:text-pink-600 transition-colors">
-                Local Fitness Tracker 🏋️
-              </h3>
-              <p class="text-sm text-pink-900/80 leading-relaxed">
-                A browser-based fitness application to log workouts, track exercise routines, and monitor health progress locally.
+            <div class="p-5 space-y-2">
+              <span class="text-[11px] font-semibold text-pink-600 uppercase">Project #2 • Health</span>
+              <h3 class="text-lg font-bold text-pink-950">Local Fitness Tracker 🏋️</h3>
+              <p class="text-xs text-pink-900/80 leading-relaxed">
+                Log workouts, design exercise routines, and track health progress directly in your browser.
               </p>
             </div>
           </div>
-          <div class="p-6 pt-0">
-            <a href="local-fitness-finder/index.html" class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-sm shadow-md shadow-pink-300 hover:shadow-lg transition-all group-hover:pink-glow">
+          <div class="p-5 pt-0">
+            <a href="local-fitness-finder/index.html" class="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-xs shadow-md transition-all">
               <span>Open Fitness Tracker</span>
               <i class="ph-bold ph-arrow-right"></i>
             </a>
           </div>
         </div>
 
-        <!-- PROJECT 3: AI QUEST CRAFT (UPCOMING) -->
-        <div class="project-card glass-card rounded-2xl overflow-hidden border border-pink-200/60 shadow-md opacity-85 hover:opacity-100 transition-all flex flex-col justify-between" data-category="ai">
+        <!-- PROJECT 3: LITTLE MOMENTS -->
+        <div class="project-card group glass-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 flex flex-col justify-between" data-category="app">
           <div>
-            <div class="h-44 bg-gradient-to-br from-pink-100 to-purple-200 relative overflow-hidden flex items-center justify-center">
-              <div class="text-center">
-                <div class="w-16 h-16 bg-white/70 rounded-2xl mx-auto flex items-center justify-center shadow-md text-purple-600 mb-2">
-                  <i class="ph-bold ph-book-open-text text-3xl"></i>
-                </div>
-                <span class="text-xs font-semibold text-purple-800 bg-white/60 px-3 py-1 rounded-full">Generative Text</span>
+            <div class="h-40 bg-gradient-to-br from-rose-500 to-pink-400 flex items-center justify-center relative">
+              <div class="w-14 h-14 bg-white/90 rounded-2xl flex items-center justify-center text-rose-600 shadow-md">
+                <i class="ph-bold ph-heart text-2xl"></i>
               </div>
-              <span class="absolute top-3 right-3 bg-pink-200 text-pink-800 text-[11px] font-bold px-2.5 py-1 rounded-full border border-pink-300">
-                Coming Soon
-              </span>
+              <span class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">Active App</span>
             </div>
-            <div class="p-6 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-pink-600 uppercase tracking-wider">Project #3</span>
-                <span class="text-xs text-pink-800/60">LLM Application</span>
-              </div>
-              <h3 class="text-xl font-bold text-pink-950">
-                AI Quest Craft 📖
-              </h3>
-              <p class="text-sm text-pink-900/70 leading-relaxed">
-                An interactive choose-your-own-adventure story builder that generates customized fantasy lore on the fly using AI prompts.
+            <div class="p-5 space-y-2">
+              <span class="text-[11px] font-semibold text-pink-600 uppercase">Project #3 • Memory Journal</span>
+              <h3 class="text-lg font-bold text-pink-950">Little Moments ❤️</h3>
+              <p class="text-xs text-pink-900/80 leading-relaxed">
+                Personal journal and selective memory sharing app powered by Supabase auth and photos.
               </p>
             </div>
           </div>
-          <div class="p-6 pt-0">
-            <button disabled class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-pink-100 text-pink-400 font-semibold text-sm cursor-not-allowed border border-pink-200">
-              <i class="ph-bold ph-lock-key"></i>
-              <span>In Development</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- PROJECT 4: AI VISION (UPCOMING) -->
-        <div class="project-card glass-card rounded-2xl overflow-hidden border border-pink-200/60 shadow-md opacity-85 hover:opacity-100 transition-all flex flex-col justify-between" data-category="ai">
-          <div>
-            <div class="h-44 bg-gradient-to-br from-rose-100 to-pink-200 relative overflow-hidden flex items-center justify-center">
-              <div class="text-center">
-                <div class="w-16 h-16 bg-white/70 rounded-2xl mx-auto flex items-center justify-center shadow-md text-rose-600 mb-2">
-                  <i class="ph-bold ph-eye text-3xl"></i>
-                </div>
-                <span class="text-xs font-semibold text-rose-800 bg-white/60 px-3 py-1 rounded-full">Computer Vision</span>
-              </div>
-              <span class="absolute top-3 right-3 bg-pink-200 text-pink-800 text-[11px] font-bold px-2.5 py-1 rounded-full border border-pink-300">
-                Planned
-              </span>
-            </div>
-            <div class="p-6 space-y-3">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold text-pink-600 uppercase tracking-wider">Project #4</span>
-                <span class="text-xs text-pink-800/60">Vision Model</span>
-              </div>
-              <h3 class="text-xl font-bold text-pink-950">
-                Smart Image Scanner 👁️
-              </h3>
-              <p class="text-sm text-pink-900/70 leading-relaxed">
-                A web app that analyzes uploaded images or camera frames to identify medieval artifacts and describe them using AI.
-              </p>
-            </div>
-          </div>
-          <div class="p-6 pt-0">
-            <button disabled class="w-full inline-flex items-center justify-center space-x-2 py-3 px-4 rounded-xl bg-pink-100 text-pink-400 font-semibold text-sm cursor-not-allowed border border-pink-200">
-              <i class="ph-bold ph-lock-key"></i>
-              <span>Coming Soon</span>
-            </button>
+          <div class="p-5 pt-0">
+            <a href="build-2/index.html" class="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-xs shadow-md transition-all">
+              <span>Open Little Moments</span>
+              <i class="ph-bold ph-arrow-right"></i>
+            </a>
           </div>
         </div>
 
       </div>
     </section>
 
-    <!-- Course Info Section -->
-    <section class="glass-card rounded-2xl p-6 sm:p-8 border border-pink-200 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
-      <div class="flex items-center space-x-4">
-        <div class="w-12 h-12 rounded-2xl bg-pink-500 text-white flex items-center justify-center shrink-0 shadow-md">
-          <i class="ph-bold ph-graduation-cap text-2xl"></i>
+    <section class="glass-card rounded-2xl p-6 border border-pink-200 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-pink-500 text-white flex items-center justify-center shrink-0 shadow">
+          <i class="ph-bold ph-graduation-cap text-xl"></i>
         </div>
         <div>
-          <h4 class="font-bold text-pink-950 text-base">About Building with AI</h4>
-          <p class="text-sm text-pink-900/70">A hands-on class exploring web development, game logic, prompt engineering, and modern AI tools.</p>
+          <h4 class="font-bold text-pink-950 text-sm">About Building with AI</h4>
+          <p class="text-xs text-pink-900/70">Exploring web development, prompt engineering, and modern AI tools.</p>
         </div>
       </div>
-      <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="shrink-0 px-4 py-2.5 rounded-xl bg-white hover:bg-pink-50 border border-pink-200 text-pink-700 font-semibold text-xs transition-colors flex items-center gap-2">
-        <i class="ph-bold ph-github-logo text-base"></i>
-        <span>Course Portfolio</span>
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="shrink-0 px-3.5 py-2 rounded-xl bg-white hover:bg-pink-50 border border-pink-200 text-pink-700 font-semibold text-xs transition-colors flex items-center gap-1.5">
+        <i class="ph-bold ph-github-logo text-sm"></i>
+        <span>GitHub Portfolio</span>
       </a>
     </section>
-
   </main>
 
-  <footer class="relative z-10 border-t border-pink-200/60 bg-white/40 backdrop-blur-md py-6 text-center text-xs text-pink-800/70">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-      <p>© Building with AI Project Hub. All rights reserved.</p>
-      <p class="flex items-center gap-1">
-        Made with <i class="ph-fill ph-heart text-pink-500"></i> & AI Assistance
-      </p>
-    </div>
+  <footer class="relative z-10 border-t border-pink-200/60 bg-white/40 backdrop-blur-md py-4 text-center text-xs text-pink-800/70">
+    <p>© Building with AI Project Hub. All rights reserved.</p>
   </footer>
 
   <script>
-    // Filtering Logic
-    function filterProjects(category) {
-      const cards = document.querySelectorAll('.project-card');
-      const buttons = document.querySelectorAll('.filter-btn');
-     
-      buttons.forEach(btn => {
-        btn.classList.remove('bg-pink-600', 'text-white', 'shadow-md', 'shadow-pink-300');
-        btn.classList.add('bg-white/80', 'text-pink-800', 'border', 'border-pink-200');
+    // Simple filter function
+    function filterProjects(cat) {
+      document.querySelectorAll('.project-card').forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.category === cat) ? 'flex' : 'none';
       });
-
-      const activeBtn = document.getElementById(`btn-${category}`);
-      if (activeBtn) {
-        activeBtn.classList.remove('bg-white/80', 'text-pink-800', 'border', 'border-pink-200');
-        activeBtn.classList.add('bg-pink-600', 'text-white', 'shadow-md', 'shadow-pink-300');
-      }
-
-      cards.forEach(card => {
-        if (category === 'all' || card.getAttribute('data-category') === category) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        const active = btn.id === `btn-${cat}`;
+        btn.className = `filter-btn px-4 py-1.5 rounded-full text-xs ${active ? 'font-bold bg-pink-600 text-white shadow-md' : 'font-semibold bg-white text-pink-800 border border-pink-200 hover:bg-pink-100'} transition-all`;
       });
     }
 
@@ -368,50 +229,32 @@
     const ctx = canvas.getContext('2d');
     let particles = [];
 
-    function resizeCanvas() {
+    function resize() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+    window.addEventListener('resize', resize);
+    resize();
 
-    class Sparkle {
-      constructor() {
-        this.reset();
-      }
-      reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 4 + 1.5;
-        this.speedY = Math.random() * 0.4 + 0.1;
-        this.opacity = Math.random() * 0.5 + 0.2;
-        this.fadeSpeed = Math.random() * 0.005 + 0.002;
-      }
-      update() {
-        this.y -= this.speedY;
-        this.opacity -= this.fadeSpeed;
-        if (this.y < -10 || this.opacity <= 0) {
-          this.reset();
-          this.y = canvas.height + 10;
-        }
-      }
-      draw() {
-        ctx.fillStyle = `rgba(236, 72, 153, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < 45; i++) {
-      particles.push(new Sparkle());
+    for (let i = 0; i < 35; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 3 + 1,
+        speed: Math.random() * 0.3 + 0.1,
+        opacity: Math.random() * 0.5 + 0.2
+      });
     }
 
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(p => {
-        p.update();
-        p.draw();
+        p.y -= p.speed;
+        if (p.y < -10) p.y = canvas.height + 10;
+        ctx.fillStyle = `rgba(236, 72, 153, ${p.opacity})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
       });
       requestAnimationFrame(animate);
     }

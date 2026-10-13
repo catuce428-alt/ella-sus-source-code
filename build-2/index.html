@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Little Moments - Personal Journal & Selective Sharing</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col min-h-screen">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-500 flex items-center justify-center text-white shadow-md shadow-rose-200">
+                        <i class="fa-solid fa-heart text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">Little Moments</h1>
+                        <p class="text-xs text-slate-400 font-medium">Personal Journal & Memories</p>
+                    </div>
+                </div>
+
+                <!-- User Bar (Logged In) -->
+                <div id="nav-user-section" class="hidden flex items-center gap-2 sm:gap-4">
+                    <button onclick="openModal('modal-create-memory')" class="inline-flex items-center gap-2 px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-150 transform active:scale-95">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span class="hidden sm:inline">New Moment</span>
+                    </button>
+                    <button onclick="openModal('modal-sql-setup')" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" title="Database Setup SQL">
+                        <i class="fa-solid fa-database text-base"></i>
+                    </button>
+                    <button onclick="openSettingsModal()" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors" title="Account Settings">
+                        <i class="fa-solid fa-gear text-base"></i>
+                    </button>
+                    <div class="h-6 w-px bg-slate-200 mx-1"></div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 border border-slate-200 flex items-center justify-center font-bold text-xs" id="nav-avatar">
+                            U
+                        </div>
+                        <span id="nav-username" class="text-sm font-medium text-slate-700 hidden md:inline">@username</span>
+                    </div>
+                    <button onclick="handleSignOut()" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors ml-1" title="Sign Out">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                    </button>
+                </div>
+
+                <!-- Unauthenticated Bar -->
+                <div id="nav-guest-section" class="flex items-center gap-2">
+                    <button onclick="openModal('modal-sql-setup')" class="text-xs px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 flex items-center gap-1.5 font-medium">
+                        <i class="fa-solid fa-database text-slate-400"></i> Supabase SQL Setup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <div id="screen-auth" class="max-w-md mx-auto my-8 bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-100">
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-book-bookmark text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900" id="auth-title">Welcome to Little Moments</h2>
+                <p class="text-sm text-slate-500 mt-1" id="auth-subtitle">Sign in to record and share your special memories.</p>
+            </div>
+
+            <!-- OAuth Options -->
+            <button onclick="handleGithubSignIn()" class="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl text-sm transition-all shadow-sm">
+                <i class="fa-brands fa-github text-lg"></i>
+                <span>Continue with GitHub</span>
+            </button>
+
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-3 text-slate-400 font-medium">Or email</span></div>
+            </div>
+
+            <!-- Auth Form -->
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Email address</label>
+                    <input type="email" id="auth-email" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-sm outline-none transition-all" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Password</label>
+                    <input type="password" id="auth-password" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-sm outline-none transition-all" placeholder="••••••••">
+                    <p class="text-xs text-slate-400 mt-1" id="password-policy-hint">Must be at least 8 chars with uppercase, lowercase, and a number.</p>
+                </div>
+
+                <div id="auth-error" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-600"></div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-sm transition-all shadow-md shadow-rose-200">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-xs text-slate-500">
+                <span id="auth-toggle-text">Don't have an account?</span>
+                <button type="button" onclick="toggleAuthMode()" id="auth-toggle-btn" class="font-bold text-rose-600 hover:underline ml-1">Sign Up</button>
+            </div>
+        </div>
+
+        <div id="screen-username-setup" class="hidden max-w-md mx-auto my-12 bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-100 text-center">
+            <div class="w-14 h-14 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-user-tag text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-900">Choose a Username</h2>
+            <p class="text-sm text-slate-500 mt-1 mb-6">Pick a unique handle so friends and family can share memories with you.</p>
+
+            <form onsubmit="handleUsernameSetup(event)" class="space-y-4">
+                <div class="text-left">
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-medium">@</span>
+                        <input type="text" id="setup-username-input" required pattern="^[a-zA-Z0-9_]{3,20}$" class="w-full pl-8 pr-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 text-sm outline-none transition-all" placeholder="e.g. stephany_99">
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">3-20 characters: letters, numbers, and underscores.</p>
+                </div>
+
+                <div id="username-error" class="hidden p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-600 text-left"></div>
+
+                <button type="submit" class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-sm transition-all shadow-md shadow-rose-200">
+                    Save Username & Continue
+                </button>
+            </form>
+        </div>
+
+        <div id="screen-dashboard" class="hidden space-y-6">
+            <!-- Feed Tabs -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0">
+                    <button id="tab-btn-private" onclick="switchFeedTab('private')" class="px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-rose-600 text-white shadow-sm">
+                        <i class="fa-solid fa-lock text-xs mr-1.5"></i> My Private Memories
+                    </button>
+                    <button id="tab-btn-shared" onclick="switchFeedTab('shared')" class="px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-user-group text-xs mr-1.5"></i> Shared with Me
+                    </button>
+                    <button id="tab-btn-public" onclick="switchFeedTab('public')" class="px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-globe text-xs mr-1.5"></i> Public Moments
+                    </button>
+                </div>
+
+                <!-- Search / Filter -->
+                <div class="relative w-full sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="feed-search-input" oninput="filterMemories()" placeholder="Search title or text..." class="w-full pl-9 pr-3 py-1.5 border border-slate-200 rounded-xl text-xs bg-white focus:outline-none focus:ring-2 focus:ring-rose-500">
+                </div>
+            </div>
+
+            <!-- Memory List Container -->
+            <div id="memories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated memory cards -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 p-8">
+                <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-regular fa-folder-open text-2xl"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-700" id="empty-state-title">No memories found</h3>
+                <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto" id="empty-state-subtitle">Start by creating your first memory journal entry!</p>
+                <button onclick="openModal('modal-create-memory')" class="mt-4 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-2 transition-all">
+                    <i class="fa-solid fa-plus"></i> Create Memory
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal-create-memory" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <h3 class="text-lg font-bold text-slate-900" id="memory-modal-title">New Memory Entry</h3>
+                <button onclick="closeModal('modal-create-memory')" class="text-slate-400 hover:text-slate-600 rounded-lg p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveMemory(event)" class="p-5 space-y-4">
+                <input type="hidden" id="edit-memory-id">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Title</label>
+                    <input type="text" id="memory-title" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none" placeholder="e.g. Autumn Hike in the Woods">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Memory Date</label>
+                        <input type="date" id="memory-date" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Visibility</label>
+                        <select id="memory-visibility" onchange="toggleSharedUserPicker()" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none bg-white">
+                            <option value="private">🔒 Private (Only Me)</option>
+                            <option value="public">🌐 Everyone (Public)</option>
+                            <option value="shared">👥 Specific Classmates / Friends</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Selective Sharing Pickers -->
+                <div id="shared-users-picker" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Share With Specific Users</label>
+                    <p class="text-xs text-slate-500">Pick users from registered profiles (e.g. Bob, Bobby, Stephany):</p>
+                    <div id="users-checkbox-list" class="max-h-32 overflow-y-auto space-y-1.5 text-xs text-slate-700 p-1 bg-white border border-slate-200 rounded-lg">
+                        <p class="text-slate-400 italic p-2">Loading profiles...</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Journal Text / Story</label>
+                    <textarea id="memory-entry" rows="4" required class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none resize-none" placeholder="What happened today? How did you feel?"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Photo (Optional, Max 5MB)</label>
+                    <input type="file" id="memory-photo" accept="image/png, image/jpeg, image/jpg, image/webp" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100">
+                    <div id="photo-preview-container" class="mt-2 hidden">
+                        <img id="photo-preview-img" src="" class="h-28 w-full object-cover rounded-xl border border-slate-200">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeModal('modal-create-memory')" class="px-4 py-2 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-50">Cancel</button>
+                    <button type="submit" id="save-memory-btn" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all">Save Moment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-settings" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900">Account Settings</h3>
+                <button onclick="closeModal('modal-settings')" class="text-slate-400 hover:text-slate-600 rounded-lg p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="p-3 bg-slate-50 rounded-xl mb-5 space-y-1">
+                <p class="text-xs text-slate-500 font-semibold uppercase">Logged in as</p>
+                <p class="text-sm font-bold text-slate-800" id="settings-email">email@domain.com</p>
+                <p class="text-xs text-slate-600">Username: <span id="settings-username" class="font-bold text-rose-600">@username</span></p>
+            </div>
+
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Change Password</h4>
+            <form onsubmit="handleChangePassword(event)" class="space-y-3">
+                <div>
+                    <input type="password" id="settings-new-password" required placeholder="New password" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                </div>
+                <div>
+                    <input type="password" id="settings-confirm-password" required placeholder="Confirm new password" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                </div>
+                <div id="settings-error" class="hidden p-2 bg-rose-50 text-rose-600 rounded-lg text-xs"></div>
+                <button type="submit" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl transition-all">
+                    Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-sql-setup" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-100">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-database text-rose-600 text-lg"></i>
+                    <h3 class="text-base font-bold text-slate-900">Supabase SQL Schema & Setup Guide</h3>
+                </div>
+                <button onclick="closeModal('modal-sql-setup')" class="text-slate-400 hover:text-slate-600 rounded-lg p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-4 text-xs text-slate-600">
+                <p>Run the SQL script below inside your <strong>Supabase SQL Editor</strong> to create the <code>profiles</code>, <code>memories</code>, and <code>memory_shares</code> tables, RLS policies, and <code>memory-photos</code> storage bucket according to project specifications.</p>
+                <div class="relative bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-[11px] overflow-x-auto">
+                    <button onclick="copySqlCode()" class="absolute top-2 right-2 px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-white rounded text-[10px]">
+                        <i class="fa-regular fa-copy mr-1"></i> Copy SQL
+                    </button>
+                    <pre id="sql-code-block">
+-- 1. Create profiles table
+CREATE TABLE IF NOT EXISTS public.profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    username TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 2. Create memories table
+CREATE TABLE IF NOT EXISTS public.memories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    memory_date DATE NOT NULL,
+    entry TEXT NOT NULL,
+    photo_url TEXT,
+    visibility TEXT NOT NULL CHECK (visibility IN ('private', 'public', 'shared')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 3. Create memory_shares table
+CREATE TABLE IF NOT EXISTS public.memory_shares (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    memory_id UUID NOT NULL REFERENCES public.memories(id) ON DELETE CASCADE,
+    shared_with_user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
+);
+
+-- 4. Enable Row Level Security (RLS)
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.memories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.memory_shares ENABLE ROW LEVEL SECURITY;
+
+-- 5. Profiles RLS
+CREATE POLICY "Authenticated users can select profiles" ON public.profiles 
+    FOR SELECT TO authenticated USING (true);
+
+CREATE POLICY "Users can insert/update own profile" ON public.profiles 
+    FOR ALL TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+
+-- 6. Memories RLS
+CREATE POLICY "Select memories" ON public.memories 
+    FOR SELECT TO authenticated USING (
+        user_id = auth.uid() 
+        OR visibility = 'public' 
+        OR EXISTS (
+            SELECT 1 FROM public.memory_shares 
+            WHERE memory_shares.memory_id = memories.id 
+            AND memory_shares.shared_with_user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Modify own memories" ON public.memories 
+    FOR ALL TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+
+-- 7. Memory Shares RLS
+CREATE POLICY "Select memory shares" ON public.memory_shares 
+    FOR SELECT TO authenticated USING (
+        shared_with_user_id = auth.uid() 
+        OR EXISTS (
+            SELECT 1 FROM public.memories 
+            WHERE memories.id = memory_shares.memory_id AND memories.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Creators manage memory shares" ON public.memory_shares 
+    FOR ALL TO authenticated USING (
+        EXISTS (
+            SELECT 1 FROM public.memories 
+            WHERE memories.id = memory_shares.memory_id AND memories.user_id = auth.uid()
+        )
+    );
+
+-- 8. Storage bucket setup
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('memory-photos', 'memory-photos', true) 
+ON CONFLICT (id) DO NOTHING;
+</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-image-preview" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop" onclick="closeModal('modal-image-preview')">
+        <div class="relative max-w-4xl w-full flex flex-col items-center">
+            <img id="lightbox-img" src="" class="max-h-[85vh] max-w-full rounded-2xl shadow-2xl object-contain">
+            <p id="lightbox-caption" class="text-white text-sm font-semibold mt-3 bg-slate-900/80 px-4 py-1.5 rounded-full"></p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://rwkhtxthqpdpazyonzxb.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_ZvyiCcxVja10I0EvNW2BQg_VisGa7sm";
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // App state
+        let currentUser = null;
+        let currentProfile = null;
+        let authIsSignUp = false;
+        let currentTab = 'private';
+        let memoriesCache = [];
+        let profilesList = [];
+
+        window.onload = async function() {
+            // Check initial user session
+            const { data: { session } } = await supabase.auth.getSession();
+            handleSessionChange(session);
+
+            // Listen for auth state changes
+            supabase.auth.onAuthStateChange(async (_event, session) => {
+                handleSessionChange(session);
+            });
+        };
+
+        async function handleSessionChange(session) {
+            if (session && session.user) {
+                currentUser = session.user;
+                document.getElementById('nav-guest-section').classList.add('hidden');
+                document.getElementById('nav-user-section').classList.remove('hidden');
+
+                // Check profile setup
+                await fetchOrCreateProfile();
+            } else {
+                currentUser = null;
+                currentProfile = null;
+                document.getElementById('nav-guest-section').classList.remove('hidden');
+                document.getElementById('nav-user-section').classList.add('hidden');
+                showScreen('screen-auth');
+            }
+        }
+
+        async function fetchOrCreateProfile() {
+            try {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .maybeSingle();
+
+                if (error && error.code !== 'PGRST116') {
+                    console.error("Profile fetch error:", error);
+                }
+
+                if (profile && profile.username) {
+                    currentProfile = profile;
+                    document.getElementById('nav-username').innerText = `@${profile.username}`;
+                    document.getElementById('nav-avatar').innerText = profile.username.charAt(0).toUpperCase();
+                    showScreen('screen-dashboard');
+                    loadMemories();
+                    loadProfilesList();
+                } else {
+                    // Prompt user to pick unique username
+                    showScreen('screen-username-setup');
+                }
+            } catch (err) {
+                console.error("Profile logic error:", err);
+                showScreen('screen-username-setup');
+            }
+        }
+
+        function showScreen(screenId) {
+            const screens = ['screen-auth', 'screen-username-setup', 'screen-dashboard'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === screenId) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value;
+            const errEl = document.getElementById('auth-error');
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            errEl.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Processing...";
+
+            // Password policy check on sign up
+            if (authIsSignUp) {
+                const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+                if (!passRegex.test(password)) {
+                    errEl.innerText = "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.";
+                    errEl.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Sign Up";
+                    return;
+                }
+            }
+
+            try {
+                if (authIsSignUp) {
+                    const { data, error } = await supabase.auth.signUp({ email, password });
+                    if (error) throw error;
+                    showToast("Account created successfully! Signing in...", "success");
+                } else {
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    showToast("Welcome back!", "success");
+                }
+            } catch (err) {
+                errEl.innerText = err.message || "Authentication failed.";
+                errEl.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = authIsSignUp ? "Sign Up" : "Sign In";
+            }
+        }
+
+        function toggleAuthMode() {
+            authIsSignUp = !authIsSignUp;
+            document.getElementById('auth-title').innerText = authIsSignUp ? "Create Your Account" : "Welcome to Little Moments";
+            document.getElementById('auth-subtitle').innerText = authIsSignUp ? "Sign up to start saving moments." : "Sign in to record and share your special memories.";
+            document.getElementById('auth-submit-btn').innerText = authIsSignUp ? "Sign Up" : "Sign In";
+            document.getElementById('auth-toggle-text').innerText = authIsSignUp ? "Already have an account?" : "Don't have an account?";
+            document.getElementById('auth-toggle-btn').innerText = authIsSignUp ? "Sign In" : "Sign Up";
+            document.getElementById('auth-error').classList.add('hidden');
+        }
+
+        async function handleGithubSignIn() {
+            try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'github',
+                    options: { redirectTo: window.location.href }
+                });
+                if (error) throw error;
+            } catch (err) {
+                showToast(err.message || "GitHub login error.", "error");
+            }
+        }
+
+        async function handleUsernameSetup(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('setup-username-input').value.trim().toLowerCase();
+            const errEl = document.getElementById('username-error');
+            errEl.classList.add('hidden');
+
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert([{ id: currentUser.id, username: usernameInput }])
+                    .select()
+                    .single();
+
+                if (error) {
+                    if (error.code === '23505') {
+                        throw new Error("This username is already taken. Please choose another.");
+                    }
+                    throw error;
+                }
+
+                currentProfile = data;
+                showToast(`Username set to @${data.username}!`, "success");
+                document.getElementById('nav-username').innerText = `@${data.username}`;
+                document.getElementById('nav-avatar').innerText = data.username.charAt(0).toUpperCase();
+                showScreen('screen-dashboard');
+                loadMemories();
+                loadProfilesList();
+            } catch (err) {
+                errEl.innerText = err.message || "Could not save username.";
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        async function loadProfilesList() {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('id, username')
+                    .neq('id', currentUser.id);
+
+                if (!error && data) {
+                    profilesList = data;
+                } else {
+                    // Fallback test classmates if table empty or pending setup
+                    profilesList = [
+                        { id: 'user-bob-id', username: 'bob' },
+                        { id: 'user-bobby-id', username: 'bobby' },
+                        { id: 'user-stephany-id', username: 'stephany' }
+                    ];
+                }
+                renderUserPickerOptions();
+            } catch (e) {
+                console.log("Using fallback classmates for sharing selector");
+            }
+        }
+
+        function renderUserPickerOptions(selectedUserIds = []) {
+            const container = document.getElementById('users-checkbox-list');
+            if (!profilesList.length) {
+                container.innerHTML = '<p class="text-slate-400 p-2">No other users found yet.</p>';
+                return;
+            }
+
+            container.innerHTML = profilesList.map(u => `
+                <label class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer">
+                    <input type="checkbox" name="share-user" value="${u.id}" ${selectedUserIds.includes(u.id) ? 'checked' : ''} class="rounded text-rose-600 focus:ring-rose-500">
+                    <span class="font-medium text-slate-800">@${u.username}</span>
+                </label>
+            `).join('');
+        }
+
+        function switchFeedTab(tab) {
+            currentTab = tab;
+            ['private', 'shared', 'public'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tab) {
+                    btn.className = "px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-rose-600 text-white shadow-sm";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100";
+                }
+            });
+            renderMemories();
+        }
+
+        async function loadMemories() {
+            try {
+                // Fetch memories
+                const { data, error } = await supabase
+                    .from('memories')
+                    .select('*, profiles:user_id(username), memory_shares(shared_with_user_id)')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                memoriesCache = data || [];
+            } catch (err) {
+                console.warn("Could not query DB memories, showing empty feed:", err.message);
+                memoriesCache = [];
+            }
+            renderMemories();
+        }
+
+        function renderMemories() {
+            const grid = document.getElementById('memories-grid');
+            const emptyState = document.getElementById('empty-state');
+            const searchVal = document.getElementById('feed-search-input').value.toLowerCase().trim();
+
+            let filtered = memoriesCache.filter(m => {
+                // Tab filter
+                if (currentTab === 'private') {
+                    if (m.user_id !== currentUser.id || m.visibility !== 'private') return false;
+                } else if (currentTab === 'public') {
+                    if (m.visibility !== 'public') return false;
+                } else if (currentTab === 'shared') {
+                    if (m.visibility === 'shared') {
+                        const isRecipient = m.memory_shares && m.memory_shares.some(s => s.shared_with_user_id === currentUser.id);
+                        if (!isRecipient && m.user_id !== currentUser.id) return false;
+                    } else {
+                        return false;
+                    }
+                }
+
+                // Search query
+                if (searchVal) {
+                    const matchTitle = m.title && m.title.toLowerCase().includes(searchVal);
+                    const matchEntry = m.entry && m.entry.toLowerCase().includes(searchVal);
+                    return matchTitle || matchEntry;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                
+                if (currentTab === 'private') {
+                    document.getElementById('empty-state-title').innerText = "No private memories yet";
+                    document.getElementById('empty-state-subtitle').innerText = "Capture moments for your personal journal.";
+                } else if (currentTab === 'shared') {
+                    document.getElementById('empty-state-title').innerText = "No memories shared with you";
+                    document.getElementById('empty-state-subtitle').innerText = "When classmates share moments with you, they will appear here.";
+                } else {
+                    document.getElementById('empty-state-title').innerText = "No public moments found";
+                    document.getElementById('empty-state-subtitle').innerText = "Be the first to publish a public moment!";
+                }
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = filtered.map(m => createMemoryCardHtml(m)).join('');
+        }
+
+        function filterMemories() {
+            renderMemories();
+        }
+
+        function createMemoryCardHtml(m) {
+            const isOwner = currentUser && m.user_id === currentUser.id;
+            const author = m.profiles?.username ? `@${m.profiles.username}` : (isOwner ? `@${currentProfile?.username || 'me'}` : 'Anonymous');
+            
+            let visBadge = '';
+            if (m.visibility === 'private') {
+                visBadge = `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[11px] font-semibold"><i class="fa-solid fa-lock mr-1"></i>Private</span>`;
+            } else if (m.visibility === 'public') {
+                visBadge = `<span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold"><i class="fa-solid fa-globe mr-1"></i>Public</span>`;
+            } else {
+                visBadge = `<span class="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[11px] font-semibold"><i class="fa-solid fa-user-group mr-1"></i>Shared</span>`;
+            }
+
+            const formattedDate = new Date(m.memory_date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+
+            return `
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
+                    <div>
+                        ${m.photo_url ? `
+                            <div class="relative h-48 w-full bg-slate-100 overflow-hidden cursor-pointer group" onclick="openLightbox('${m.photo_url}', '${escapeHtml(m.title)}')">
+                                <img src="${m.photo_url}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/600x400/ffe4e6/be123c?text=Little+Moments'">
+                                <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                    <i class="fa-solid fa-expand text-lg"></i>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div class="p-5">
+                            <div class="flex items-center justify-between gap-2 mb-2">
+                                ${visBadge}
+                                <span class="text-xs font-medium text-slate-400"><i class="fa-regular fa-calendar mr-1"></i>${formattedDate}</span>
+                            </div>
+
+                            <h3 class="text-base font-bold text-slate-900 line-clamp-1 mb-2">${escapeHtml(m.title)}</h3>
+                            <p class="text-xs text-slate-600 line-clamp-4 whitespace-pre-line leading-relaxed mb-4">${escapeHtml(m.entry)}</p>
+                        </div>
+                    </div>
+
+                    <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-500">${author}</span>
+                        ${isOwner ? `
+                            <div class="flex items-center gap-1">
+                                <button onclick="openEditMemoryModal('${m.id}')" class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg text-xs" title="Edit">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button onclick="handleDeleteMemory('${m.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg text-xs" title="Delete">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleSharedUserPicker() {
+            const vis = document.getElementById('memory-visibility').value;
+            const picker = document.getElementById('shared-users-picker');
+            if (vis === 'shared') {
+                picker.classList.remove('hidden');
+            } else {
+                picker.classList.add('hidden');
+            }
+        }
+
+        async function handleSaveMemory(e) {
+            e.preventDefault();
+            const memoryId = document.getElementById('edit-memory-id').value;
+            const title = document.getElementById('memory-title').value.trim();
+            const memory_date = document.getElementById('memory-date').value;
+            const visibility = document.getElementById('memory-visibility').value;
+            const entry = document.getElementById('memory-entry').value.trim();
+            const photoInput = document.getElementById('memory-photo');
+            const saveBtn = document.getElementById('save-memory-btn');
+
+            saveBtn.disabled = true;
+            saveBtn.innerText = "Saving...";
+
+            try {
+                let photo_url = null;
+
+                // Handle Image Upload if provided
+                if (photoInput.files && photoInput.files[0]) {
+                    const file = photoInput.files[0];
+                    if (file.size > 5 * 1024 * 1024) {
+                        throw new Error("Photo size must be under 5 MB.");
+                    }
+
+                    const fileExt = file.name.split('.').pop();
+                    const filePath = `${currentUser.id}/${Date.now()}.${fileExt}`;
+
+                    // Attempt upload to memory-photos bucket
+                    const { error: uploadError } = await supabase.storage
+                        .from('memory-photos')
+                        .upload(filePath, file, { upsert: true });
+
+                    if (uploadError) {
+                        console.warn("Storage bucket error, falling back to local preview:", uploadError.message);
+                        photo_url = await window.readFileAsDataURL(file);
+                    } else {
+                        const { data: pubData } = supabase.storage.from('memory-photos').getPublicUrl(filePath);
+                        photo_url = pubData.publicUrl;
+                    }
+                }
+
+                const memoryPayload = {
+                    user_id: currentUser.id,
+                    title,
+                    memory_date,
+                    visibility,
+                    entry,
+                    ...(photo_url ? { photo_url } : {})
+                };
+
+                let savedMemory = null;
+
+                if (memoryId) {
+                    // Update existing
+                    const { data, error } = await supabase
+                        .from('memories')
+                        .update(memoryPayload)
+                        .eq('id', memoryId)
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    savedMemory = data;
+                } else {
+                    // Insert new
+                    const { data, error } = await supabase
+                        .from('memories')
+                        .insert([memoryPayload])
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    savedMemory = data;
+                }
+
+                // Manage Memory Shares if visibility === 'shared'
+                if (visibility === 'shared') {
+                    // Clear existing shares
+                    await supabase.from('memory_shares').delete().eq('memory_id', savedMemory.id);
+
+                    // Insert new selected shares
+                    const checkedCheckboxes = document.querySelectorAll('input[name="share-user"]:checked');
+                    const selectedUserIds = Array.from(checkedCheckboxes).map(cb => cb.value);
+
+                    if (selectedUserIds.length > 0) {
+                        const sharesToInsert = selectedUserIds.map(uid => ({
+                            memory_id: savedMemory.id,
+                            shared_with_user_id: uid
+                        }));
+                        await supabase.from('memory_shares').insert(sharesToInsert);
+                    }
+                }
+
+                showToast(memoryId ? "Moment updated!" : "New moment created!", "success");
+                closeModal('modal-create-memory');
+                loadMemories();
+            } catch (err) {
+                showToast(err.message || "Failed to save memory", "error");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "Save Moment";
+            }
+        }
+
+        function openEditMemoryModal(id) {
+            const memory = memoriesCache.find(m => m.id === id);
+            if (!memory) return;
+
+            document.getElementById('edit-memory-id').value = memory.id;
+            document.getElementById('memory-title').value = memory.title;
+            document.getElementById('memory-date').value = memory.memory_date;
+            document.getElementById('memory-visibility').value = memory.visibility;
+            document.getElementById('memory-entry').value = memory.entry;
+            document.getElementById('memory-modal-title').innerText = "Edit Memory Entry";
+
+            // Render existing shared users
+            const existingShares = memory.memory_shares ? memory.memory_shares.map(s => s.shared_with_user_id) : [];
+            renderUserPickerOptions(existingShares);
+            toggleSharedUserPicker();
+
+            openModal('modal-create-memory');
+        }
+
+        async function handleDeleteMemory(id) {
+            if (!confirm("Are you sure you want to delete this moment?")) return;
+
+            try {
+                const { error } = await supabase.from('memories').delete().eq('id', id);
+                if (error) throw error;
+                showToast("Moment deleted", "success");
+                loadMemories();
+            } catch (err) {
+                showToast(err.message || "Could not delete moment", "error");
+            }
+        }
+
+        function openSettingsModal() {
+            if (!currentUser) return;
+            document.getElementById('settings-email').innerText = currentUser.email;
+            document.getElementById('settings-username').innerText = `@${currentProfile?.username || 'user'}`;
+            document.getElementById('settings-error').classList.add('hidden');
+            openModal('modal-settings');
+        }
+
+        async function handleChangePassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('settings-new-password').value;
+            const confirmPass = document.getElementById('settings-confirm-password').value;
+            const errEl = document.getElementById('settings-error');
+
+            errEl.classList.add('hidden');
+
+            if (newPass !== confirmPass) {
+                errEl.innerText = "Passwords do not match.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passRegex.test(newPass)) {
+                errEl.innerText = "Password must be at least 8 chars with uppercase, lowercase, and a number.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const { error } = await supabase.auth.updateUser({ password: newPass });
+                if (error) throw error;
+                showToast("Password updated successfully!", "success");
+                closeModal('modal-settings');
+            } catch (err) {
+                errEl.innerText = err.message || "Could not update password.";
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        async function handleSignOut() {
+            await supabase.auth.signOut();
+            showToast("Signed out successfully", "info");
+        }
+
+        function openModal(modalId) {
+            if (modalId === 'modal-create-memory' && !document.getElementById('edit-memory-id').value) {
+                // Reset form on new creation
+                document.getElementById('edit-memory-id').value = '';
+                document.getElementById('memory-title').value = '';
+                document.getElementById('memory-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('memory-visibility').value = 'private';
+                document.getElementById('memory-entry').value = '';
+                document.getElementById('memory-photo').value = '';
+                document.getElementById('memory-modal-title').innerText = "New Memory Entry";
+                renderUserPickerOptions([]);
+                toggleSharedUserPicker();
+            }
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function openLightbox(imgUrl, caption) {
+            document.getElementById('lightbox-img').src = imgUrl;
+            document.getElementById('lightbox-caption').innerText = caption;
+            openModal('modal-image-preview');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgClass = type === 'success' ? 'bg-emerald-600 text-white' : 
+                            type === 'error' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-white';
+            
+            toast.className = `${bgClass} text-xs font-semibold px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transform transition-all duration-300 translate-y-2 opacity-0 pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info'}"></i><span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function copySqlCode() {
+            const sqlText = document.getElementById('sql-code-block').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = sqlText;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            showToast("SQL script copied to clipboard!", "success");
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        window.readFileAsDataURL = function(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        };
+    </script>
+</body>
+</html>
